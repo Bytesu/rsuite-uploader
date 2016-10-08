@@ -1,2 +1,2 @@
 # rsuite-upload
-A react ajax file upload component.
+React component , Upload files async with xhr. Supporting IE9+.
