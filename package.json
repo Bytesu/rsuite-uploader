@@ -1,35 +1,38 @@
 {
-    "name": "rsuite-upload",
-    "version": "0.0.1",
-    "description": "React component , Upload files async with xhr. Supporting IE9+.",
-    "main": "main.js",
-    "scripts": {
-        "test": "npm run build && node test.js"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/rsuite/rsuite-upload.git"
-    },
-    "keywords": [
-        "react",
-        "upload",
-        "rsuite"
-    ],
-    "author": [
-        {
-            "name": "Godfery Yang",
-            "email": "hiyangguo@qq.com",
-            "url": "http://hiyangguo.github.io"
-        }
-    ],
-    "license": "MIT",
-    "bugs": {
-        "url": "https://github.com/rsuite/rsuite-upload/issues"
-    },
-    "homepage": "https://github.com/rsuite/rsuite-upload#readme",
-    "devDependencies": {
-        "eslint": "^2.8.0",
-        "eslint-plugin-babel": "^3.2.0",
-        "eslint-plugin-react": "^5.0.1"
+  "name": "rsuite-upload",
+  "version": "0.0.1",
+  "description": "React component , Upload files async with xhr. Supporting IE9+.",
+  "main": "main.js",
+  "scripts": {
+    "run": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rsuite/rsuite-upload.git"
+  },
+  "keywords": [
+    "react",
+    "upload",
+    "rsuite"
+  ],
+  "author": [
+    {
+      "name": "Godfery Yang",
+      "email": "hiyangguo@qq.com",
+      "url": "http://hiyangguo.github.io"
     }
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rsuite/rsuite-upload/issues"
+  },
+  "homepage": "https://github.com/rsuite/rsuite-upload#readme",
+  "devDependencies": {
+    "eslint": "^2.8.0",
+    "eslint-plugin-babel": "^3.2.0",
+    "eslint-plugin-react": "^5.0.1",
+    "express": "^4.14.0",
+    "express-fileupload": "^0.0.5",
+    "uuid": "^2.0.3"
+  }
 }
