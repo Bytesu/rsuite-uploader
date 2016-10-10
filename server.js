@@ -9,9 +9,13 @@ var fs = require('fs');
 var uuid = require('uuid');
 var app = express();
 
-mkdirs('cache');
+var cachePath = path.resolve(__dirname, 'cache');
+mkdirs(cachePath);
 
+//文件访问
+app.use('/static', express.static(cachePath));
 app.use(fileUpload());
+
 
 app.post('/upload', function(req, res) {
     var sampleFile, tempFileName;
@@ -23,12 +27,18 @@ app.post('/upload', function(req, res) {
 
     sampleFile = req.files.sampleFile;
     tempFileName = [uuid.v1(), path.extname(sampleFile.name)].join('');
-    sampleFile.mv(path.resolve('cache', tempFileName), function(err) {
+    sampleFile.mv(path.resolve(cachePath, tempFileName), function(err) {
         if (err) {
             res.status(500).send(err);
             return;
         }
-        res.send('File uploaded!');
+        res.json({
+            code: 200000,
+            result: {
+                filename: sampleFile.name,
+                encodeFileName: tempFileName
+            }
+        });
     });
 });
 
