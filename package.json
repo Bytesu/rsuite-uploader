@@ -4,9 +4,10 @@
   "description": "React component , Upload files async with xhr. Supporting IE9+.",
   "main": "main.js",
   "scripts": {
-    "run": "node server.js",
+    "server": "node server.js",
+    "build": "rm -rf lib && babel src --out-dir lib",
     "dev": "env NODE_ENV=development webpack --progress -colors --watch",
-    "build": "env NODE_ENV=production webpack --progress -colors"
+    "example": "npm run server && env NODE_ENV=production webpack --progress -colors"
   },
   "repository": {
     "type": "git",
@@ -29,6 +30,11 @@
     "url": "https://github.com/rsuite/rsuite-upload/issues"
   },
   "homepage": "https://github.com/rsuite/rsuite-upload#readme",
+  "dependencies": {
+    "classnames": "^2.2.5",
+    "react": "^0.14.2",
+    "react-dom": "^0.14.8"
+  },
   "devDependencies": {
     "babel-cli": "^6.16.0",
     "babel-core": "^6.17.0",

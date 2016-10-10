@@ -20,7 +20,7 @@ if (process.env.NODE_ENV === 'production') {
 
 module.exports = {
     entry: {
-        index: path.join(__dirname, 'src')
+        index: path.join(__dirname, 'example')
     },
     output: {
         path: path.join(__dirname, 'assets'),
