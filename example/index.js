@@ -16,7 +16,8 @@ var Form = React.createClass({
                   action='http://localhost:3000/upload'
                   method='post'
                   encType="multipart/form-data">
-                <Upload name="sampleFile"/>
+                <Upload
+                    name="sampleFile"/>
                 <input type='submit' value='Upload!'/>
             </form>
         );
