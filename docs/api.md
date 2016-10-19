@@ -22,7 +22,7 @@
 }
 ```
 
-### auto ?
+### auto
 {Boolean} [可选] [默认值：false] 设置为 true 后，不需要手动调用上传，有文件选择即开始上传。
 ### method
 {String} [可选] [默认值：'POST'] 文件上传方式，POST或者GET。

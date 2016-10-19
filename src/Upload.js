@@ -7,18 +7,24 @@ import util from './common/util';
 const Upload = React.createClass({
     propTypes: {
         name: React.PropTypes.string,
-        onChange: React.PropTypes.func
+        multiple:React.PropTypes.bool,
+        accept:React.PropTypes.array
     },
     getDefaultProps(){
-        
+
     },
     handleChange(e){
-        console.log(e);
+
     },
     render() {
-        const {name = '', onChange} = this.props;
+        const {name = '',multiple=false,accept=[]} = this.props;
+        let acceptStr = util.getAcceptStr(accept);
         return (
-            <input type="file" name={name} onChange={this.handleChange}/>
+            <input type="file"
+                   name={name}
+                   multiple={multiple}
+                   accept={acceptStr}
+                   onChange={this.handleChange} />
         );
     }
 });
