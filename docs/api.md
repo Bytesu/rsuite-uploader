@@ -2,6 +2,8 @@
 
 # Rsuite Upload
 ## props
+### baseUrl
+{String} 文件上传的url
 ### dnd
 {Selector} [可选] [默认值：undefined] 指定Drag And Drop拖拽的容器，如果不指定，则不启动。
 ### disableGlobalDnd
@@ -22,10 +24,8 @@
 }
 ```
 
-### auto
+### autoUpload
 {Boolean} [可选] [默认值：false] 设置为 true 后，不需要手动调用上传，有文件选择即开始上传。
-### method
-{String} [可选] [默认值：'POST'] 文件上传方式，POST或者GET。
 ### threads
 {Boolean} [可选] [默认值：3] 上传并发数。允许同时最大上传进程数。
 ### formData
@@ -39,6 +39,7 @@
 ## props(function)
 ### beforeFileQueued
 - file `{File}` File对象
+- file `{Array}` 全部文件
 
 > 当文件被加入队列之前触发，此事件的handler返回值为false，则此文件不会被添加进入队列。
 
@@ -52,7 +53,7 @@
 
 > 当一批文件添加进队列以后触发。
 
-### fileDequeued
+### fileDeQueued
 - file `{File}`File对象
 
 > 当文件被移除队列后触发。
@@ -99,10 +100,10 @@
 
 > 不管成功或者失败，文件上传完成时触发。
 
-### error
+### validateError
 - type `{String}`错误类型。
 
-> 当validate不通过时，会以派送错误事件的形式通知调用者。
+> 当validate不通过时触发。
 
 1. `Q_EXCEED_NUM_LIMIT` 在设置了`fileNumLimit`且尝试给`uploader`添加的文件数量超出这个值时派送。
 2. `Q_EXCEED_SIZE_LIMIT` 在设置了`Q_EXCEED_SIZE_LIMIT`且尝试给`uploader`添加的文件总大小超出这个值时派送。

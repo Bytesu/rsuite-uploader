@@ -9,7 +9,7 @@ export default {
      * @param obj
      * @returns {*}
      */
-    getType: function (obj) {
+    getType(obj) {
         return Object.prototype.toString.call(obj);
     },
     /**
@@ -17,7 +17,7 @@ export default {
      * @param func
      * @returns {boolean}
      */
-    isFunction: function (func) {
+    isFunction(func) {
         return this.getType(func) === TYPE_REFERENCES.FUNC;
     },
     /**
@@ -25,13 +25,24 @@ export default {
      * @param accept
      * @returns {String}
      */
-    getAcceptStr:function(accept) {
-        let _extensions=[],_mimeTypes=[];
-        accept.forEach((_A)=>{
-            const {extensions='',mimeTypes=''}=_A;
-            _extensions = [..._extensions,extensions.split(',').map((str)=>`.${str}`)];
-            _mimeTypes =[..._mimeTypes,mimeTypes];
-        });
-        return Array.from(new Set([..._extensions,..._mimeTypes])).join(',');
+    getAcceptStr(accept) {
+        const _mimeTypes = Array.from(new Set(...accept.reduce((_mimeTypes, _A)=> {
+            let {mimeTypes = '', extensions = ''} = _A;
+            return [..._mimeTypes, mimeTypes];
+        }, [])));
+        return _mimeTypes.length > 0 ? _mimeTypes.join('.') : '.*';
+    },
+    /**
+     * 获取ie版本 如果不是ie则返回-1
+     * @return {Number}
+     */
+    ieInfo(){
+        const userAgent = navigator.userAgent;
+        const version = userAgent.indexOf('MSIE');
+        if (version < 0) {
+            return -1;
+        }
+        return parseFloat(userAgent.substring(version + 5, userAgent.indexOf(';', version)));
+
     }
-}
+};

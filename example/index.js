@@ -9,32 +9,34 @@ import Upload from '../src/main';
 const rootElement = document.getElementById('app');
 
 var Form = React.createClass({
-    getInitialState: function () {
-        return {
-
-        };
+    getInitialState: function() {
+        return {};
     },
     submitHandle(){
 
     },
     render(){
         const accept = [{
-                title: 'Images',
-                extensions: 'gif,jpg,jpeg,bmp,png',
-                mimeTypes:'image/*'
-            }];
+            title: 'Images',
+            extensions: 'jpg,jpeg',
+            mimeTypes: 'image/*'
+        }, {
+            title: 'Images',
+            extensions: 'png',
+            mimeTypes: 'image/png'
+        }];
         return (
             <form ref='uploadForm'
                   id='uploadForm'
-                  action='http://localhost:3000/upload'
                   method='post'
                   encType="multipart/form-data">
                 <Upload
                     name="sampleFile"
                     multiple
                     accept={accept}
+                    baseUrl='http://localhost:3000/upload'
                 />
-                <input type='button' value='Upload!'/>
+                <input type='button' value='Upload!' onClick={this.submitHandle}/>
             </form>
         );
     }
