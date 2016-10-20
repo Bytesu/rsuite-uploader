@@ -14,6 +14,7 @@ mkdirs(cachePath);
 
 //文件访问
 app.use('/static', express.static(cachePath));
+app.use('/', express.static('./'));
 app.use(fileUpload());
 
 

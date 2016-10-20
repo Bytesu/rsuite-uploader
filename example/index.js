@@ -25,6 +25,9 @@ var Form = React.createClass({
             extensions: 'png',
             mimeTypes: 'image/png'
         }];
+        const formData = {
+            test: 1
+        };
         return (
             <form ref='uploadForm'
                   id='uploadForm'
@@ -34,6 +37,7 @@ var Form = React.createClass({
                     name="sampleFile"
                     multiple
                     accept={accept}
+                    formData={formData}
                     baseUrl='http://localhost:3000/upload'
                 />
                 <input type='button' value='Upload!' onClick={this.submitHandle}/>

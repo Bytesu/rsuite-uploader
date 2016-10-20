@@ -7,33 +7,32 @@ import {
     UNIT,
     VALIDATE_ERROR_STRING,
     VALIDATE_CODE,
-    EMPTY_FUNCTION
+    EMPTY_FUNCTION,
+    FILE_STATUS_CODE
 } from  './common/constant';
 
 const PT = React.PropTypes;
 const updateProps = Symbol('updateProps');
 const Upload = React.createClass({
     propTypes: {
-        name: PT.string,
-        multiple: PT.bool,
-        accept: PT.array,
-        autoUpload: PT.bool,
-        baseUrl:PT.string,
-        fileNumLimit: PT.number,
-        fileSizeLimit: PT.number,
+        name               : PT.string,
+        multiple           : PT.bool,
+        accept             : PT.array,
+        autoUpload         : PT.bool,
+        baseUrl            : PT.string,
+        fileNumLimit       : PT.number,
+        fileSizeLimit      : PT.number,
         fileSingleSizeLimit: PT.number,
-        beforeFileQueued: PT.func,
-        fileQueued: PT.func,
-        filesQueued: PT.func,
-        fileDeQueued: PT.func,
-        validateError: PT.func
+        beforeFileQueued   : PT.func,
+        fileQueued         : PT.func,
+        filesQueued        : PT.func,
+        fileDeQueued       : PT.func,
+        validateError      : PT.func
     },
     getDefaultProps(){
-
     },
     componentWillMount(){
-        // console.log([updateProps]);
-        this['_updateProps'](this.props);
+        this._updateProps(this.props);
     },
     render() {
         return (util.ieInfo() < 0 || util.ieInfo() > 10) ? this.modernUploadRender() : (
@@ -72,21 +71,22 @@ const Upload = React.createClass({
     },
     _updateProps(props){
         const {
-            baseUrl,
-            autoUpload = true,
-            fileNumLimit = 10,
-            fileSizeLimit = 500 * UNIT.MB,
-            fileSingleSizeLimit = 5 * UNIT.MB,
-            name = 'rFile',
-            multiple = false,
-            accept = [],
-            beforeFileQueued = EMPTY_FUNCTION,
-            fileQueued = EMPTY_FUNCTION,
-            filesQueued = EMPTY_FUNCTION,
-            fileDeQueued = EMPTY_FUNCTION,
-            validateError = EMPTY_FUNCTION
-        } = props;
-        if (baseUrl) {
+                  baseUrl,
+                  autoUpload          = true,
+                  fileNumLimit        = 10,
+                  fileSizeLimit       = 500 * UNIT.MB,
+                  fileSingleSizeLimit = 5 * UNIT.MB,
+                  name                = 'rFile',
+                  multiple            = false,
+                  accept              = [],
+                  formData            = {},
+                  beforeFileQueued    = EMPTY_FUNCTION,
+                  fileQueued          = EMPTY_FUNCTION,
+                  filesQueued         = EMPTY_FUNCTION,
+                  fileDeQueued        = EMPTY_FUNCTION,
+                  validateError       = EMPTY_FUNCTION
+              }                       = props;
+        if (!baseUrl) {
             throw new Error('baseUrl missing in props');
         }
         this.baseUrl = baseUrl;
@@ -97,6 +97,7 @@ const Upload = React.createClass({
         this.name = name;
         this.multiple = multiple;
         this.accept = accept;
+        this.formData = formData;
         /**
          * 文件加入队列前触发如果返回false，则不加入队列
          * @type {EMPTY_FUNCTION}
@@ -137,12 +138,39 @@ const Upload = React.createClass({
         );
     },
     modernUpload(){
-        if (!this.files) {
+        if (!this.fileList) {
             return;
         }
-        //formData
-        let formData = new FormData();
-    }
+        const _thisFormData = this.formData;
+        const _baseUrl = this.baseUrl;
+        const _name = this.name;
+        this.fileList.forEach(function(file) {
+            //formData
+            let formData = new FormData();
+            const guiId = util.guid();
+            if (!file.status) {
+                file.status = FILE_STATUS_CODE.INITED;
+                file.gid = guiId;
+            }
+            if (file.status !== FILE_STATUS_CODE.INITED) {
+                return;
+            }
+            formData.append(_name, file, file.name);
+            Object.keys(_thisFormData).forEach((key)=> {
+                formData.append(key, _thisFormData[key]);
+            });
+            var xhr = new XMLHttpRequest();
+            file.xhr = xhr;
+            xhr.open('POST', _baseUrl, true);
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    console.log('SUCCESS',xhr);
+                    return;
+                }
+                console.log('ERROR',xhr);
+            };
+            xhr.send(formData);
+        });
+    },
 });
-
 export default Upload;

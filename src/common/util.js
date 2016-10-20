@@ -2,7 +2,6 @@
  * Created by Godfery on 2016/10/14.
  */
 import {TYPE_REFERENCES} from './constant';
-
 export default {
     /**
      * 返回obj的类型
@@ -43,6 +42,13 @@ export default {
             return -1;
         }
         return parseFloat(userAgent.substring(version + 5, userAgent.indexOf(';', version)));
-
+    },
+    /**
+     * 生成一个定长的随机字符串
+     * @param num [8] - 长度
+     * @return {string}
+     */
+    guid(num = 8){
+        return (Math.random() * 1E18).toString(36).slice(0, num).toUpperCase();
     }
 };
