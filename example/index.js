@@ -8,20 +8,14 @@ import Upload from '../src/main';
 
 const rootElement = document.getElementById('app');
 
-var Form = React.createClass({
-    getInitialState: function() {
-        return {};
-    },
-    submitHandle(){
-
-    },
+var App = React.createClass({
     render(){
         const option = {
             name          : 'sampleFile',
             multiple      : true,
             baseUrl       : 'http://localhost:3000/upload',
             accept        : [
-                {title: 'Images', extensions: 'jpg,jpeg', mimeTypes: 'image/*'},
+                {title: 'Images', extensions: 'jpg,jpeg', mimeTypes: 'image/jpeg'},
                 {title: 'Images', extensions: 'png', mimeTypes: 'image/png'}
             ],
             formData      : {
@@ -41,18 +35,12 @@ var Form = React.createClass({
             }
         };
         return (
-            <form ref='uploadForm'
-                  id='uploadForm'
-                  method='post'
-                  encType="multipart/form-data">
-                <Upload {...option}/>
-                <input type='button' value='Upload!' onClick={this.submitHandle}/>
-            </form>
+            <Upload {...option}/>
         );
     }
 });
 
 ReactDOM.render(
-    <Form/>,
+    <App/>,
     rootElement
 );

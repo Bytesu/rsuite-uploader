@@ -30,7 +30,7 @@
 {
     title: 'Images',
     extensions: 'gif,jpg,jpeg,bmp,png',
-    mimeTypes:'image/*'
+    mimeTypes:'image/*' //此处请尽量减少使用通配符*否则 可能导致卡顿问题严重
 }
 ```
 

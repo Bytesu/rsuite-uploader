@@ -36,7 +36,8 @@ const Upload = React.createClass({
         fileDeQueued       : PT.func,
         validateError      : PT.func,
         uploadError        : PT.func,
-        uploadSuccess      : PT.func
+        uploadSuccess      : PT.func,
+        uploadProgress     : PT.func
     },
     getDefaultProps(){
     },
@@ -69,7 +70,8 @@ const Upload = React.createClass({
                   validateError       = EMPTY_FUNCTION,
                   uploadError         = EMPTY_FUNCTION,
                   uploadSuccess       = EMPTY_FUNCTION,
-                  uploadFail          = EMPTY_FUNCTION
+                  uploadFail          = EMPTY_FUNCTION,
+                  uploadProgress      = EMPTY_FUNCTION
               }                       = props;
         if (!baseUrl) {
             throw new Error('baseUrl missing in props');
@@ -136,6 +138,13 @@ const Upload = React.createClass({
          * @param file `{File}` File对象
          */
         this.uploadFail = uploadFail;
+        /**
+         * 上传过程中触发
+         * @type {callback}
+         * @param process
+         * @param file `{File}` File对象
+         */
+        this.uploadProgress = uploadProgress;
     },
     /**
      * 现代浏览器 file input 的change方法
@@ -236,7 +245,7 @@ const Upload = React.createClass({
             //formData
             let formData  = new FormData(),
                 isTimeout = false,
-                timeout = T.timeOut;
+                timeout   = T.timeOut;
             //只有 文件状态为初始状态才调用上传方法
             if (file.status !== FILE_STATUS_CODE.INITED) {
                 return;
@@ -257,6 +266,7 @@ const Upload = React.createClass({
             if (timeout) {
                 xhr.timeout = timeout;
                 xhr.ontimeout = function() {
+                    file.status = FILE_STATUS_CODE.ERROR;
                     T.uploadError({
                         code   : UPLOAD_ERROR_CODE_STRING[UPLOAD_ERROR_CODE.TIMEOUT_ERROR],
                         message: UPLOAD_ERROR_CODE_STRING[UPLOAD_ERROR_CODE.TIMEOUT_ERROR]
@@ -280,34 +290,48 @@ const Upload = React.createClass({
                 try {
                     if (xhr.readyState === 4 && xhr.status >= 200 && xhr.status < 400) {
                         let resp = T.dataType === DEFAULT_DATA_TYPE_JSON ? JSON.parse(xhr.responseText) : xhr.responseText;
+                        file.status = FILE_STATUS_CODE.COMPLETE;
                         T.uploadSuccess(resp, file);
                     } else if (xhr.readyState === 4) {
                         //xhr fail
                         let _resp = T.dataType === DEFAULT_DATA_TYPE_JSON ? JSON.parse(xhr.responseText) : xhr.responseText;
+                        file.status = FILE_STATUS_CODE.ERROR;
                         T.uploadFail(_resp, file);
                     }
                 } catch (e) {
                     //超时的错误 不在这里处理
-                    !isTimeout && T.uploadError({
-                        code   : UPLOAD_ERROR_CODE_STRING[UPLOAD_ERROR_CODE.FINISH_ERROR],
-                        message: e.message
-                    });
+                    if (!isTimeout) {
+                        file.status = FILE_STATUS_CODE.ERROR;
+                        T.uploadError({
+                            code   : UPLOAD_ERROR_CODE_STRING[UPLOAD_ERROR_CODE.FINISH_ERROR],
+                            message: e.message
+                        });
+                    }
                 }
+            };
+
+            /**
+             * 处理上传过程
+             * @type {XMLHttpRequest.upload.onprogress}
+             */
+            xhr.onprogress = xhr.upload.onprogress = function(progress) {
+                T.uploadProgress(progress, file);
             };
 
             /**
              * xhr 出错时处理
              */
             xhr.onerror = function() {
+                file.status = FILE_STATUS_CODE.ERROR;
                 try {
                     let resp = T.dataType === DEFAULT_DATA_TYPE_JSON ? JSON.parse(xhr.responseText) : xhr.responseText;
                     T.uploadError({
-                        type: UPLOAD_ERROR_CODE_STRING[UPLOAD_ERROR_CODE.XHR_ERROR],
+                        type   : UPLOAD_ERROR_CODE_STRING[UPLOAD_ERROR_CODE.XHR_ERROR],
                         message: resp
                     });
                 } catch (e) {
                     T.uploadError({
-                        type: UPLOAD_ERROR_CODE_STRING[UPLOAD_ERROR_CODE.XHR_ERROR],
+                        type   : UPLOAD_ERROR_CODE_STRING[UPLOAD_ERROR_CODE.XHR_ERROR],
                         message: e.message
                     });
                 }
@@ -316,15 +340,18 @@ const Upload = React.createClass({
             /**
              * 处理abort
              */
-            xhr.onabort = function () {
+            xhr.onabort = function() {
+                file.status = FILE_STATUS_CODE.ERROR;
                 T.uploadError({
-                    type:UPLOAD_ERROR_CODE_STRING[UPLOAD_ERROR_CODE.XHR_ABORT],
-                    message:UPLOAD_ERROR_CODE_STRING[UPLOAD_ERROR_CODE.XHR_ABORT]
+                    type   : UPLOAD_ERROR_CODE_STRING[UPLOAD_ERROR_CODE.XHR_ABORT],
+                    message: UPLOAD_ERROR_CODE_STRING[UPLOAD_ERROR_CODE.XHR_ABORT]
                 });
             };
 
             xhr.send(formData);
         });
+        //清空input的值
+        this.refs['RSuiteUploadFile'].value = '';
     },
 });
 export default Upload;

@@ -59,13 +59,9 @@ const VALIDATE_CODE = {
 /**
  * 文件状态值，具体包括以下几种类型：
  * `inited` 初始状态
- * `queued` 已经进入队列, 等待上传
  * `progress` 上传中
  * `complete` 上传完成。
  * `error` 上传出错，可重试
- * `interrupt` 上传中断，可续传。
- * `invalid` 文件不合格，不能重试上传。会自动从队列中移除。
- * `cancelled` 文件被移除。
  * @property {Object} Status
  * @const FILE_STATUS_CODE
  * @static
