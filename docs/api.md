@@ -2,8 +2,16 @@
 
 # Rsuite Upload
 ## props
+### name
+{String} [可选] [默认值：rFile]提交时，文件在formData中的name
 ### baseUrl
 {String} 文件上传的url
+### withCredentials
+{Boolean} [可选] [默认值：false] 表明在进行跨站(cross-site)的访问控制(Access-Control)请求时，是否使用认证信息
+### requestHeaders
+{Object} [可选] [默认值: undefined] 请求头
+### timeout
+{Object} [可选] [默认值:undefined] 请求头
 ### dnd
 {Selector} [可选] [默认值：undefined] 指定Drag And Drop拖拽的容器，如果不指定，则不启动。
 ### disableGlobalDnd
@@ -31,11 +39,11 @@
 ### formData
 {Object} [可选] [默认值：{}] 文件上传请求的参数表，每次发送都会发送此对象中的参数。
 ### fileNumLimit
-{int} [可选] [默认值：undefined] 文件总数量, 超出则不允许加入队列。
+{int} [可选] [默认值：10] 文件总数量, 超出则不允许加入队列。
 ### fileSizeLimit
-{int} [可选] [默认值：undefined] 验证文件总大小是否超出限制, 超出则不允许加入队列。
+{int} [可选] [默认值：5MB] 验证文件总大小是否超出限制, 超出则不允许加入队列。
 ### fileSingleSizeLimit
-{int} [可选] [默认值：undefined] 验证单个文件大小是否超出限制, 超出则不允许加入队列。
+{int} [可选] [默认值：50MB] 验证单个文件大小是否超出限制, 超出则不允许加入队列。
 ## props(function)
 ### beforeFileQueued
 - file `{File}` File对象

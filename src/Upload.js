@@ -20,6 +20,8 @@ const Upload = React.createClass({
         accept             : PT.array,
         autoUpload         : PT.bool,
         baseUrl            : PT.string,
+        withCredentials    : PT.bool,
+        requestHeaders     : PT.object,
         fileNumLimit       : PT.number,
         fileSizeLimit      : PT.number,
         fileSingleSizeLimit: PT.number,
@@ -38,46 +40,17 @@ const Upload = React.createClass({
         return (util.ieInfo() < 0 || util.ieInfo() > 10) ? this.modernUploadRender() : (
             <p>暂不支持远古IE浏览器(IE6,IE7,IE8,IE9)</p>);
     },
-    handleFileChange(e){
-        let files = e.dataTransfer ? e.dataTransfer.files :
-            e.target ? e.target.files : [];
-        let fileList = [];
-        if (!fileList.sizeCount) {
-            fileList.sizeCount = 0;
-        }
-        Array.from(files).forEach((_F)=> {
-            if (this.beforeFileQueued(_F, fileList) === false) {
-                return;
-            }
-            const {size} = _F;
-            if (fileList.length > this.fileNumLimit) {
-                this.validateError(VALIDATE_ERROR_STRING[VALIDATE_CODE.Q_EXCEED_NUM_LIMIT]);
-                return;
-            }
-            if (size > this.fileSingleSizeLimit) {
-                this.validateError(VALIDATE_ERROR_STRING[VALIDATE_CODE.Q_EXCEED_SIZE_LIMIT]);
-                return;
-            }
-            if (fileList + size > this.fileSizeLimit) {
-                this.validateError(VALIDATE_ERROR_STRING[VALIDATE_CODE.F_EXCEED_SIZE]);
-                return;
-            }
-            fileList.push(_F);
-            fileList.sizeCount += size;
-        });
-        this.fileList = fileList;
-        this.filesQueued(fileList);
-        this.autoUpload && this.modernUpload();
-    },
     _updateProps(props){
         const {
                   baseUrl,
                   autoUpload          = true,
                   fileNumLimit        = 10,
-                  fileSizeLimit       = 500 * UNIT.MB,
+                  fileSizeLimit       = 50 * UNIT.MB,
                   fileSingleSizeLimit = 5 * UNIT.MB,
                   name                = 'rFile',
                   multiple            = false,
+                  withCredentials     = false,
+                  requestHeaders,
                   accept              = [],
                   formData            = {},
                   beforeFileQueued    = EMPTY_FUNCTION,
@@ -89,14 +62,24 @@ const Upload = React.createClass({
         if (!baseUrl) {
             throw new Error('baseUrl missing in props');
         }
+        //上传URL
         this.baseUrl = baseUrl;
+        //是否开启验证信息
+        this.withCredentials = withCredentials;
+        //请求头
+        this.requestHeaders = requestHeaders;
+        //自动上传
         this.autoUpload = autoUpload;
+        //最大文件数
         this.fileNumLimit = fileNumLimit;
+        //总文件限制
         this.fileSizeLimit = fileSizeLimit;
+        //单个文件限制
         this.fileSingleSizeLimit = fileSingleSizeLimit;
         this.name = name;
         this.multiple = multiple;
         this.accept = accept;
+        this.accept.extensionsReg = util.getExtensionsReg(accept);
         this.formData = formData;
         /**
          * 文件加入队列前触发如果返回false，则不加入队列
@@ -123,6 +106,70 @@ const Upload = React.createClass({
         this.validateError = validateError;
     },
     /**
+     * 现代浏览器 file input 的change方法
+     * @param e
+     */
+    handleModernFileChange(e){
+        let files = e.dataTransfer ? e.dataTransfer.files :
+            e.target ? e.target.files : [];
+        let fileList = [];
+        if (!fileList.sizeCount) {
+            fileList.sizeCount = 0;
+        }
+        Array.from(files).forEach((_F)=> {
+            if (this.beforeFileQueued(_F, fileList) === false) {
+                return;
+            }
+            const {size, name} = _F;
+            const extName = util.getExtName(name);
+            /**
+             * 验证文件数是否达到上限
+             */
+            if (fileList.length > this.fileNumLimit) {
+                this.validateError({
+                    code: VALIDATE_ERROR_STRING[VALIDATE_CODE.Q_EXCEED_NUM_LIMIT]
+                });
+                return;
+            }
+            /**
+             * 验证文件格式
+             */
+            if (!this.accept.extensionsReg.test(extName)) {
+                this.validateError({
+                    code: VALIDATE_ERROR_STRING[VALIDATE_CODE.Q_TYPE_DENIED]
+                });
+                return;
+            }
+            /**
+             * 验证单个文件大小
+             */
+            if (size > this.fileSingleSizeLimit) {
+                this.validateError({
+                    code: VALIDATE_ERROR_STRING[VALIDATE_CODE.Q_EXCEED_SIZE_LIMIT]
+                });
+                return;
+            }
+            /**
+             * 验证总文件大小
+             */
+            if (fileList + size > this.fileSizeLimit) {
+                this.validateError({
+                    code: VALIDATE_ERROR_STRING[VALIDATE_CODE.F_EXCEED_SIZE]
+                });
+                return;
+            }
+            _F.status = FILE_STATUS_CODE.INITED;
+            _F.gid = util.guid();
+            fileList.push(_F);
+            fileList.sizeCount += size;
+            this.fileQueued(_F);
+        });
+        this.fileList = fileList;
+        this.filesQueued(fileList);
+        //如果允许自动上传则调用上传方法
+        this.autoUpload && this.modernUpload();
+    },
+    /**
      * 现代浏览器HTML5实现 render
      * @return {XML}
      */
@@ -134,40 +181,43 @@ const Upload = React.createClass({
                    multiple={this.multiple}
                    accept={acceptStr}
                    ref="RSuiteUploadFile"
-                   onChange={this.handleFileChange}/>
+                   onChange={this.handleModernFileChange}/>
         );
     },
+    /**
+     * 现代浏览器上传方法 （使用XMLHttpRequest）
+     */
     modernUpload(){
+        var T = this;
         if (!this.fileList) {
             return;
         }
-        const _thisFormData = this.formData;
-        const _baseUrl = this.baseUrl;
-        const _name = this.name;
         this.fileList.forEach(function(file) {
             //formData
             let formData = new FormData();
-            const guiId = util.guid();
-            if (!file.status) {
-                file.status = FILE_STATUS_CODE.INITED;
-                file.gid = guiId;
-            }
+            //只有 文件状态为初始状态才调用上传方法
             if (file.status !== FILE_STATUS_CODE.INITED) {
                 return;
             }
-            formData.append(_name, file, file.name);
-            Object.keys(_thisFormData).forEach((key)=> {
-                formData.append(key, _thisFormData[key]);
+            formData.append(T.name, file, file.name);
+            Object.keys(T.formData).forEach((key)=> {
+                formData.append(key, T.formData[key]);
             });
             var xhr = new XMLHttpRequest();
             file.xhr = xhr;
-            xhr.open('POST', _baseUrl, true);
+            xhr.open('POST', T.baseUrl, true);
+            const ResHead = T.requestHeaders;
+            ResHead && Object.keys(ResHead).forEach((key)=> {
+                xhr.setRequestHeader(key, ResHead[key]);
+            });
+            //跨域是否开启验证信息
+            xhr.withCredentials = T.withCredentials;
             xhr.onload = function() {
                 if (xhr.status === 200) {
-                    console.log('SUCCESS',xhr);
+                    console.log('SUCCESS', xhr);
                     return;
                 }
-                console.log('ERROR',xhr);
+                console.log('ERROR', xhr);
             };
             xhr.send(formData);
         });

@@ -27,7 +27,7 @@ app.post('/upload', function(req, res) {
     }
 
     sampleFile = req.files.sampleFile;
-    tempFileName = [uuid.v1(), path.extname(sampleFile.name)].join('');
+    tempFileName = [uuid.v1(), path.getExtname(sampleFile.name)].join('');
     sampleFile.mv(path.resolve(cachePath, tempFileName), function(err) {
         if (err) {
             res.status(500).send(err);
