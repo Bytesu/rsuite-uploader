@@ -11,7 +11,9 @@
 ### requestHeaders
 {Object} [可选] [默认值: undefined] 请求头
 ### timeout
-{Object} [可选] [默认值:undefined] 请求头
+{Object} [可选] [默认值:undefined] 超时时间
+### dataType
+{String} [可选] [默认值:json] 返回的数据类型 `json`/`string`
 ### dnd
 {Selector} [可选] [默认值：undefined] 指定Drag And Drop拖拽的容器，如果不指定，则不启动。
 ### disableGlobalDnd
@@ -46,8 +48,9 @@
 {int} [可选] [默认值：50MB] 验证单个文件大小是否超出限制, 超出则不允许加入队列。
 ## props(function)
 ### beforeFileQueued
-- file `{File}` File对象
-- file `{Array}` 全部文件
+- file `{File}` 单个对象
+- files `{File[]}`数组，内容为此次选中的所有文件
+- fileList `{File[]}`数组，内容为整个file队列
 
 > 当文件被加入队列之前触发，此事件的handler返回值为false，则此文件不会被添加进入队列。
 
@@ -57,7 +60,8 @@
 > 当文件被加入队列以后触发。
 
 ### filesQueued
-- files `{File}`数组，内容为原始File对象。
+- files `{File[]}`数组，内容为此次选中的所有文件
+- fileList `{File[]}`数组，内容为整个file队列
 
 > 当一批文件添加进队列以后触发。
 
@@ -80,11 +84,6 @@
 
 > 某个文件开始上传前触发，一个文件只会触发一次。
 
-### uploadBeforeSend
-@return object {Object}
-- data `{Object}`默认的上传参数，可以扩展此对象来控制上传参数。
-- headers `{Object}`可以扩展此对象来控制上传头部。
-
 ### uploadProgress
 - file `{File}`File对象
 - percentage `{Number}`上传进度
@@ -98,10 +97,14 @@
 > 当文件上传出错时触发。
 
 ### uploadSuccess
-- file `{File}`File对象
 - response `{Object}`服务端返回的数据
+- file `{File}`File对象
 
-> 当文件上传成功时触发。
+### uploadFail
+- response `{Object}`服务端返回的数据
+- file `{File}`File对象
+
+> 当文件上传失败时触发。
 
 ### uploadComplete
 - file `{File}` [可选]File对象

@@ -29,6 +29,15 @@ var Form = React.createClass({
             },
             requestHeaders: {
                 'Company-Name': 'Hypers'
+            },
+            uploadSuccess(){
+
+            },
+            uploadError(){
+
+            },
+            uploadFail(){
+
             }
         };
         return (
