@@ -1,6 +1,8 @@
 /**
  * Created by Godfery on 2016/10/10.
  */
+import './less/main.less';
+
 import React from 'react';
 import util from './common/util';
 import {
@@ -13,23 +15,25 @@ import {
     UPLOAD_ERROR_CODE_STRING,
     DEFAULT_DATA_TYPE_JSON
 } from  './common/constant';
+import UploadButton from './component/UploadButton';
 
 const PT = React.PropTypes;
-const updateProps = Symbol('updateProps');
+
 const Upload = React.createClass({
     propTypes: {
-        baseUrl            : PT.string,
+        accept             : PT.array,
         autoUpload         : PT.bool,
+        baseUrl            : PT.string,
+        dataType           : PT.string,
         fileNumLimit       : PT.number,
         fileSizeLimit      : PT.number,
         fileSingleSizeLimit: PT.number,
+        multiple           : PT.bool,
+        disabled           : PT.bool,
         name               : PT.string,
         timeOut            : PT.number,
-        dataType           : PT.string,
         withCredentials    : PT.bool,
-        multiple           : PT.bool,
         requestHeaders     : PT.object,
-        accept             : PT.array,
         beforeFileQueued   : PT.func,
         fileQueued         : PT.func,
         filesQueued        : PT.func,
@@ -40,6 +44,38 @@ const Upload = React.createClass({
         uploadProgress     : PT.func
     },
     getDefaultProps(){
+        return {
+            autoUpload         : true,
+            fileNumLimit       : 10,
+            fileSizeLimit      : 50 * UNIT.MB,
+            fileSingleSizeLimit: 5 * UNIT.MB,
+            name               : 'rFile',
+            multiple           : false,
+            disabled           : false,
+            withCredentials    : false,
+            dataType           : 'json',
+            accept             : [],
+            formData           : {},
+            beforeFileQueued   : EMPTY_FUNCTION,
+            fileQueued         : EMPTY_FUNCTION,
+            filesQueued        : EMPTY_FUNCTION,
+            fileDeQueued       : EMPTY_FUNCTION,
+            validateError      : EMPTY_FUNCTION,
+            uploadError        : EMPTY_FUNCTION,
+            uploadSuccess      : EMPTY_FUNCTION,
+            uploadFail         : EMPTY_FUNCTION,
+            uploadProgress     : EMPTY_FUNCTION
+        };
+    },
+    getInitialState(){
+        let {fileList = []} = this.props;
+        fileList = fileList.map((file)=> {
+            file.gid = util.guid();
+            return file;
+        });
+        return {
+            fileList
+        };
     },
     componentWillMount(){
         this._updateProps(this.props);
@@ -48,31 +84,32 @@ const Upload = React.createClass({
         return (util.ieInfo() < 0 || util.ieInfo() > 10) ? this.modernUploadRender() : (
             <p>暂不支持远古IE浏览器(IE6,IE7,IE8,IE9)</p>);
     },
-    _updateProps(props){
+    _updateProps (props){
         const {
                   baseUrl,
-                  autoUpload          = true,
-                  fileNumLimit        = 10,
-                  fileSizeLimit       = 50 * UNIT.MB,
-                  fileSingleSizeLimit = 5 * UNIT.MB,
-                  name                = 'rFile',
-                  multiple            = false,
-                  withCredentials     = false,
+                  autoUpload,
+                  fileNumLimit,
+                  fileSizeLimit,
+                  fileSingleSizeLimit,
+                  name,
+                  multiple,
+                  disabled,
+                  withCredentials,
                   requestHeaders,
                   timeOut,
-                  dataType            = 'json',
-                  accept              = [],
-                  formData            = {},
-                  beforeFileQueued    = EMPTY_FUNCTION,
-                  fileQueued          = EMPTY_FUNCTION,
-                  filesQueued         = EMPTY_FUNCTION,
-                  fileDeQueued        = EMPTY_FUNCTION,
-                  validateError       = EMPTY_FUNCTION,
-                  uploadError         = EMPTY_FUNCTION,
-                  uploadSuccess       = EMPTY_FUNCTION,
-                  uploadFail          = EMPTY_FUNCTION,
-                  uploadProgress      = EMPTY_FUNCTION
-              }                       = props;
+                  dataType,
+                  accept,
+                  formData,
+                  beforeFileQueued,
+                  fileQueued,
+                  filesQueued,
+                  fileDeQueued,
+                  validateError,
+                  uploadError,
+                  uploadSuccess,
+                  uploadFail,
+                  uploadProgress
+              } = props;
         if (!baseUrl) {
             throw new Error('baseUrl missing in props');
         }
@@ -90,8 +127,11 @@ const Upload = React.createClass({
         this.fileSizeLimit = fileSizeLimit;
         //单个文件限制
         this.fileSingleSizeLimit = fileSingleSizeLimit;
+        //返回数据的数据类型
+        this.dataType = dataType;
         this.name = name;
         this.multiple = multiple;
+        this.disabled = disabled;
         this.accept = accept;
         this.accept.extensionsReg = util.getExtensionsReg(accept);
         this.formData = formData;
@@ -153,7 +193,7 @@ const Upload = React.createClass({
     handleModernFileChange(e){
         let files = e.dataTransfer ? e.dataTransfer.files :
             e.target ? e.target.files : [];
-        let fileList = this.fileList || [];
+        let fileList = this.state.fileList;
         if (!fileList.sizeCount) {
             fileList.sizeCount = 0;
         }
@@ -175,7 +215,7 @@ const Upload = React.createClass({
             fileList.sizeCount += size;
             this.fileQueued(_F);
         });
-        this.fileList = fileList;
+        this.setState({fileList});
         //文件全部加入队列后执行的回调
         this.filesQueued(files, fileList);
         //如果允许自动上传则调用上传方法
@@ -223,14 +263,17 @@ const Upload = React.createClass({
      * @return {XML}
      */
     modernUploadRender(){
-        let acceptStr = util.getAcceptStr(this.accept);
         return (
-            <input type="file"
-                   name={this.name}
-                   multiple={this.multiple}
-                   accept={acceptStr}
-                   ref="RSuiteUploadFile"
-                   onChange={this.handleModernFileChange}/>
+            <div className="rsuite-upload-wrap modern">
+                <UploadButton name={this.name}
+                              multiple={this.multiple}
+                              disabled={this.disabled}
+                              accept={this.accept}
+                              ref="RSuiteUploadButton"
+                              handleChange={this.handleModernFileChange}>
+                    {this.props.children}
+                </UploadButton>
+            </div>
         );
     },
     /**
@@ -238,10 +281,10 @@ const Upload = React.createClass({
      */
     modernUpload(){
         var T = this;
-        if (!this.fileList) {
+        if (!this.state.fileList) {
             return;
         }
-        this.fileList.forEach(function(file) {
+        this.state.fileList.forEach(function(file) {
             //formData
             let formData  = new FormData(),
                 isTimeout = false,
@@ -270,7 +313,7 @@ const Upload = React.createClass({
                     T.uploadError({
                         code   : UPLOAD_ERROR_CODE_STRING[UPLOAD_ERROR_CODE.TIMEOUT_ERROR],
                         message: UPLOAD_ERROR_CODE_STRING[UPLOAD_ERROR_CODE.TIMEOUT_ERROR]
-                    });
+                    }, file);
                     isTimeout = false;
                 };
                 setTimeout(function() {
@@ -288,6 +331,14 @@ const Upload = React.createClass({
             xhr.onreadystatechange = function() {
                 //xhr 完成
                 try {
+                    /**
+                     * xhr.readyState
+                     * 0    UNSENT    代理被创建，但尚未调用 open() 方法。
+                     * 1    OPENED    open() 方法已经被调用。
+                     * 2    HEADERS_RECEIVED    send() 方法已经被调用，并且头部和状态已经可获得。
+                     * 3    LOADING    下载中； responseText 属性已经包含部分数据。
+                     * 4    DONE    下载操作已完成。
+                     */
                     if (xhr.readyState === 4 && xhr.status >= 200 && xhr.status < 400) {
                         let resp = T.dataType === DEFAULT_DATA_TYPE_JSON ? JSON.parse(xhr.responseText) : xhr.responseText;
                         file.status = FILE_STATUS_CODE.COMPLETE;
@@ -305,7 +356,7 @@ const Upload = React.createClass({
                         T.uploadError({
                             code   : UPLOAD_ERROR_CODE_STRING[UPLOAD_ERROR_CODE.FINISH_ERROR],
                             message: e.message
-                        });
+                        }, file);
                     }
                 }
             };
@@ -328,12 +379,12 @@ const Upload = React.createClass({
                     T.uploadError({
                         type   : UPLOAD_ERROR_CODE_STRING[UPLOAD_ERROR_CODE.XHR_ERROR],
                         message: resp
-                    });
+                    }, file);
                 } catch (e) {
                     T.uploadError({
                         type   : UPLOAD_ERROR_CODE_STRING[UPLOAD_ERROR_CODE.XHR_ERROR],
                         message: e.message
-                    });
+                    }, file);
                 }
             };
 
@@ -345,13 +396,14 @@ const Upload = React.createClass({
                 T.uploadError({
                     type   : UPLOAD_ERROR_CODE_STRING[UPLOAD_ERROR_CODE.XHR_ABORT],
                     message: UPLOAD_ERROR_CODE_STRING[UPLOAD_ERROR_CODE.XHR_ABORT]
-                });
+                }, file);
             };
 
             xhr.send(formData);
         });
         //清空input的值
-        this.refs['RSuiteUploadFile'].value = '';
+        this.refs['RSuiteUploadButton'].setValue('');
     },
 });
+
 export default Upload;

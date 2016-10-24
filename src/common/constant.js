@@ -67,10 +67,10 @@ const VALIDATE_CODE = {
  * @static
  */
 const FILE_STATUS_CODE = {
-    INITED  : 'inited',    // 初始状态
-    PROGRESS: 'progress',    // 上传中
-    ERROR   : 'error',    // 上传出错
-    COMPLETE: 'complete'    // 上传完成。
+    INITED  : 'INITED',    // 初始状态
+    PROGRESS: 'PROGRESS',    // 上传中
+    ERROR   : 'ERROR',    // 上传出错
+    COMPLETE: 'COMPLETE'    // 上传完成
 };
 
 /**
@@ -81,7 +81,7 @@ const FILE_STATUS_CODE = {
  * @const {UPLOAD_ERROR_CODE_STRING}
  * @type {string[]}
  */
-const UPLOAD_ERROR_CODE_STRING = ['TIMEOUT_ERROR', 'SERVER_ERROR', 'XHR_ERROR','XHR_ABORT'];
+const UPLOAD_ERROR_CODE_STRING = ['TIMEOUT_ERROR', 'SERVER_ERROR', 'XHR_ERROR', 'XHR_ABORT'];
 /**
  *
  * TIMEOUT_ERROR: 0 超时

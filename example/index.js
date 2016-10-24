@@ -11,6 +11,7 @@ const rootElement = document.getElementById('app');
 var App = React.createClass({
     render(){
         const option = {
+            timeout       : 5e4,
             name          : 'sampleFile',
             multiple      : true,
             baseUrl       : 'http://localhost:3000/upload',
@@ -24,18 +25,18 @@ var App = React.createClass({
             requestHeaders: {
                 'Company-Name': 'Hypers'
             },
-            uploadSuccess(){
-
+            uploadSuccess(response, file){
+                console.log('SUCCESS', response, file);
             },
-            uploadError(){
-
+            uploadError(error, file){
+                console.log('ERROR', error, file);
             },
-            uploadFail(){
-
+            uploadFail(response, file){
+                console.log('FAIL', response, file);
             }
         };
         return (
-            <Upload {...option}/>
+            <Upload {...option}>上传文件</Upload>
         );
     }
 });

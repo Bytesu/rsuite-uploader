@@ -3,20 +3,11 @@ const webpack = require('webpack');
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 const plugins = [
-    new ExtractTextPlugin("styles.css"),
-    new webpack.DefinePlugin({
-        'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
-    })
+    new ExtractTextPlugin("styles.css")
+    // new webpack.DefinePlugin({
+    //     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
+    // })
 ];
-
-if (process.env.NODE_ENV === 'production') {
-    plugins.push(new webpack.optimize.UglifyJsPlugin({
-        compress: {
-            warnings: false
-        }
-    }));
-    plugins.push(new webpack.BannerPlugin(`Last update: ${new Date().toString()}`));
-}
 
 module.exports = {
     entry: {

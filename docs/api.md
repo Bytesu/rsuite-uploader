@@ -12,6 +12,8 @@
 {Object} [可选] [默认值: undefined] 请求头
 ### timeout
 {Object} [可选] [默认值:undefined] 超时时间
+### disabled
+{Boolean} ][可选] [默认值:false] 如果为true，则禁用
 ### dataType
 {String} [可选] [默认值:json] 返回的数据类型 `json`/`string`
 ### dnd
@@ -91,8 +93,8 @@
 > 上传过程中触发，携带上传进度。
 
 ### uploadError
+- reason {Object} 错误信息
 - file `{File}`File对象
-- reason {String}出错的code
 
 > 当文件上传出错时触发。
 
@@ -100,11 +102,11 @@
 - response `{Object}`服务端返回的数据
 - file `{File}`File对象
 
-### uploadFail
+### uploadFail 
 - response `{Object}`服务端返回的数据
 - file `{File}`File对象
 
-> 当文件上传失败时触发。
+> 当文件上传失败时触发。服务端statusCode>400时
 
 ### uploadComplete
 - file `{File}` [可选]File对象
