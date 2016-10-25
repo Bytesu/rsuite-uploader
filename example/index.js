@@ -5,6 +5,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import Upload from '../src/main';
+import ProgressPanel from '../src/component/ProgressPanel';
 
 const rootElement = document.getElementById('app');
 
@@ -14,7 +15,7 @@ var App = React.createClass({
             timeout       : 5e4,
             name          : 'sampleFile',
             multiple      : true,
-            baseUrl       : 'http://localhost:3000/upload',
+            baseUrl       : '/upload',
             accept        : [
                 {title: 'Images', extensions: 'jpg,jpeg', mimeTypes: 'image/jpeg'},
                 {title: 'Images', extensions: 'png', mimeTypes: 'image/png'}
@@ -35,8 +36,15 @@ var App = React.createClass({
                 console.log('FAIL', response, file);
             }
         };
+        const file = {
+            name: '测试文件.jpg',
+            gid : 1111
+        };
         return (
-            <Upload {...option}>上传文件</Upload>
+            <div>
+                <Upload {...option}>上传文件</Upload>
+                <ProgressPanel/>
+            </div>
         );
     }
 });

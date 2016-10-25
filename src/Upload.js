@@ -3,7 +3,7 @@
  */
 import './less/main.less';
 
-import React from 'react';
+import React, {PropTypes} from 'react';
 import util from './common/util';
 import {
     UNIT,
@@ -17,31 +17,30 @@ import {
 } from  './common/constant';
 import UploadButton from './component/UploadButton';
 
-const PT = React.PropTypes;
 
 const Upload = React.createClass({
     propTypes: {
-        accept             : PT.array,
-        autoUpload         : PT.bool,
-        baseUrl            : PT.string,
-        dataType           : PT.string,
-        fileNumLimit       : PT.number,
-        fileSizeLimit      : PT.number,
-        fileSingleSizeLimit: PT.number,
-        multiple           : PT.bool,
-        disabled           : PT.bool,
-        name               : PT.string,
-        timeOut            : PT.number,
-        withCredentials    : PT.bool,
-        requestHeaders     : PT.object,
-        beforeFileQueued   : PT.func,
-        fileQueued         : PT.func,
-        filesQueued        : PT.func,
-        fileDeQueued       : PT.func,
-        validateError      : PT.func,
-        uploadError        : PT.func,
-        uploadSuccess      : PT.func,
-        uploadProgress     : PT.func
+        accept             : PropTypes.array,
+        autoUpload         : PropTypes.bool,
+        baseUrl            : PropTypes.string,
+        dataType           : PropTypes.string,
+        fileNumLimit       : PropTypes.number,
+        fileSizeLimit      : PropTypes.number,
+        fileSingleSizeLimit: PropTypes.number,
+        multiple           : PropTypes.bool,
+        disabled           : PropTypes.bool,
+        name               : PropTypes.string,
+        timeOut            : PropTypes.number,
+        withCredentials    : PropTypes.bool,
+        requestHeaders     : PropTypes.object,
+        beforeFileQueued   : PropTypes.func,
+        fileQueued         : PropTypes.func,
+        filesQueued        : PropTypes.func,
+        fileDeQueued       : PropTypes.func,
+        validateError      : PropTypes.func,
+        uploadError        : PropTypes.func,
+        uploadSuccess      : PropTypes.func,
+        uploadProgress     : PropTypes.func
     },
     getDefaultProps(){
         return {
@@ -259,24 +258,6 @@ const Upload = React.createClass({
         return -1;
     },
     /**
-     * 现代浏览器HTML5实现 render
-     * @return {XML}
-     */
-    modernUploadRender(){
-        return (
-            <div className="rsuite-upload-wrap modern">
-                <UploadButton name={this.name}
-                              multiple={this.multiple}
-                              disabled={this.disabled}
-                              accept={this.accept}
-                              ref="RSuiteUploadButton"
-                              handleChange={this.handleModernFileChange}>
-                    {this.props.children}
-                </UploadButton>
-            </div>
-        );
-    },
-    /**
      * 现代浏览器上传方法 （使用XMLHttpRequest）
      */
     modernUpload(){
@@ -336,8 +317,8 @@ const Upload = React.createClass({
                      * 0    UNSENT    代理被创建，但尚未调用 open() 方法。
                      * 1    OPENED    open() 方法已经被调用。
                      * 2    HEADERS_RECEIVED    send() 方法已经被调用，并且头部和状态已经可获得。
-                     * 3    LOADING    下载中； responseText 属性已经包含部分数据。
-                     * 4    DONE    下载操作已完成。
+                     * 3    LOADING    载入中； responseText 属性已经包含部分数据。
+                     * 4    DONE    载入已完成。
                      */
                     if (xhr.readyState === 4 && xhr.status >= 200 && xhr.status < 400) {
                         let resp = T.dataType === DEFAULT_DATA_TYPE_JSON ? JSON.parse(xhr.responseText) : xhr.responseText;
@@ -352,10 +333,15 @@ const Upload = React.createClass({
                 } catch (e) {
                     //超时的错误 不在这里处理
                     if (!isTimeout) {
+                        console.log(e);
                         file.status = FILE_STATUS_CODE.ERROR;
                         T.uploadError({
-                            code   : UPLOAD_ERROR_CODE_STRING[UPLOAD_ERROR_CODE.FINISH_ERROR],
-                            message: e.message
+                            code   : UPLOAD_ERROR_CODE_STRING[UPLOAD_ERROR_CODE.SERVER_ERROR],
+                            message: {
+                                statusCode: xhr.status,
+                                response  : xhr.responseText,
+                                error     : e
+                            }
                         }, file);
                     }
                 }
@@ -383,7 +369,11 @@ const Upload = React.createClass({
                 } catch (e) {
                     T.uploadError({
                         type   : UPLOAD_ERROR_CODE_STRING[UPLOAD_ERROR_CODE.XHR_ERROR],
-                        message: e.message
+                        message: {
+                            statusCode: xhr.status,
+                            response  : xhr.responseText,
+                            error     : e
+                        }
                     }, file);
                 }
             };
@@ -404,6 +394,27 @@ const Upload = React.createClass({
         //清空input的值
         this.refs['RSuiteUploadButton'].setValue('');
     },
+    /**
+     * 现代浏览器HTML5实现 render
+     * @return {XML}
+     */
+    modernUploadRender(){
+        return (
+            <div className="rsuite-upload-wrap modern">
+                <UploadButton name={this.name}
+                              multiple={this.multiple}
+                              disabled={this.disabled}
+                              accept={this.accept}
+                              ref="RSuiteUploadButton"
+                              handleChange={this.handleModernFileChange}>
+                    {this.props.children}
+                </UploadButton>
+                <div className="rsuite-upload-file-list">
+
+                </div>
+            </div>
+        );
+    }
 });
 
 export default Upload;

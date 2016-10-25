@@ -1,12 +1,24 @@
 const path = require('path');
 const webpack = require('webpack');
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
+
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 const plugins = [
-    new ExtractTextPlugin("styles.css")
+    new webpack.DefinePlugin({
+        'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
+    }),
+    new ExtractTextPlugin('[name].css'),
+    new HtmlWebpackPlugin({
+        title: 'Loading...',
+        filename: 'index.html',
+        template: 'example/index.html',
+        inject: true,
+        hash: true
+    }),
 ];
 
-module.exports = {
+const config = {
     entry: {
         index: path.join(__dirname, 'example')
     },
@@ -33,3 +45,17 @@ module.exports = {
         }]
     }
 };
+
+if (process.env.NODE_TYPE === 'integration') {
+    config.devServer = {
+        proxy: {
+            '/upload': {
+                target: 'http://localhost:3000',
+                secure: false
+            }
+        }
+    };
+};
+
+
+module.exports = config;

@@ -6,8 +6,7 @@
   "scripts": {
     "server": "node server.js",
     "build": "rm -rf lib && babel src --out-dir lib",
-    "dev": "env NODE_ENV=development webpack --progress -colors --watch",
-    "example": "npm run server && env NODE_ENV=production webpack --progress -colors"
+    "dev": "NODE_ENV=development NODE_TYPE=integration webpack-dev-server --hot --inline --progress --colors --port 8099 --host 0.0.0.0 --config webpack.dev.config.js"
   },
   "repository": {
     "type": "git",
@@ -51,12 +50,13 @@
     "express": "^4.14.0",
     "express-fileupload": "^0.0.5",
     "extract-text-webpack-plugin": "^1.0.1",
+    "html-webpack-plugin": "^2.24.0",
     "less": "^2.7.1",
     "less-loader": "^2.2.3",
     "rsuite": "0.0.20",
     "style-loader": "^0.13.1",
     "uuid": "^2.0.3",
     "webpack": "^1.13.2",
-    "webpack-dev-server": "^1.14.1"
+    "webpack-dev-server": "^1.16.2"
   }
 }

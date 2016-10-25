@@ -89,7 +89,7 @@ const UPLOAD_ERROR_CODE_STRING = ['TIMEOUT_ERROR', 'SERVER_ERROR', 'XHR_ERROR', 
  * XHR_ERROR: 2 XHR错误
  * XHR_ABORT: 3 XHR中断
  * @const {UPLOAD_ERROR_CODE}
- * @type {{TIMEOUT_ERROR: number, FINISH_ERROR: number}}
+ * @type {{TIMEOUT_ERROR: number, SERVER_ERROR: number, XHR_ERROR: number, XHR_ABORT: number}}
  */
 const UPLOAD_ERROR_CODE = {
     TIMEOUT_ERROR: 0,

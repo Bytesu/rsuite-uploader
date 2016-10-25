@@ -1,19 +1,17 @@
 /**
  * Created by Godfery on 2016/10/24.
  */
-import React from 'react';
+import React, {PropTypes} from 'react';
 import util from  '../common/util';
 import {Button} from 'rsuite';
 
-const PT = React.PropTypes;
-
 const UploadButton = React.createClass({
     prototypes: {
-        name    : PT.string,
-        multiple: PT.bool,
-        disabled: PT.bool,
-        accept  : PT.array,
-        onChange: PT.func
+        name    : PropTypes.string,
+        multiple: PropTypes.bool,
+        disabled: PropTypes.bool,
+        accept  : PropTypes.array,
+        onChange: PropTypes.func
     },
     setValue(value){
         this.refs['RSuiteUploadButton'].value = value;
