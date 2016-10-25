@@ -30,7 +30,7 @@ const Upload = React.createClass({
         multiple           : PropTypes.bool,
         disabled           : PropTypes.bool,
         name               : PropTypes.string,
-        timeOut            : PropTypes.number,
+        timeout            : PropTypes.number,
         withCredentials    : PropTypes.bool,
         requestHeaders     : PropTypes.object,
         beforeFileQueued   : PropTypes.func,
@@ -95,7 +95,7 @@ const Upload = React.createClass({
                   disabled,
                   withCredentials,
                   requestHeaders,
-                  timeOut,
+                  timeout,
                   dataType,
                   accept,
                   formData,
@@ -134,7 +134,7 @@ const Upload = React.createClass({
         this.accept = accept;
         this.accept.extensionsReg = util.getExtensionsReg(accept);
         this.formData = formData;
-        this.timeOut = timeOut;
+        this.timeout = timeout;
         /**
          * 文件加入队列前触发如果返回false，则不加入队列
          * @type {EMPTY_FUNCTION}
@@ -269,7 +269,7 @@ const Upload = React.createClass({
             //formData
             let formData  = new FormData(),
                 isTimeout = false,
-                timeout   = T.timeOut;
+                timeout   = T.timeout;
             //只有 文件状态为初始状态才调用上传方法
             if (file.status !== FILE_STATUS_CODE.INITED) {
                 return;

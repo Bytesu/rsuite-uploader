@@ -16,14 +16,16 @@ const Progressbar = React.createClass({
     },
     render(){
         const {progress, show} = this.props;
-        const display = show ? 'block' : 'none';
-        const style = {
-            width: `${progress}%`,
-            display
+        const visibility = show ? 'visible' : 'hidden';
+        const wrapStyle = {
+            visibility
+        }
+        const progressbarStyle = {
+            width: `${progress}%`
         }
         return (
-            <div className="rsuite-upload-progress striped">
-                <div className="rsuite-upload-progressbar" style={style}></div>
+            <div className="rsuite-upload-progress striped" style={wrapStyle}>
+                <div className="rsuite-upload-progressbar" style={progressbarStyle}></div>
             </div>
         );
     }

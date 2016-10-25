@@ -6,12 +6,12 @@ import util from '../common/util';
 const FilePanel = React.createClass({
     prototypes: {
         gid         : PropTypes.string,
+        cancelBtn   : PropTypes.bool,
         handleCancel: PropTypes.func
     },
-    getInitialState(){
-        const {gid} = this.props;
+    getDefaultProps(){
         return {
-            gid,
+            cancelBtn:true
         };
     },
     handleClick(e){
@@ -19,17 +19,18 @@ const FilePanel = React.createClass({
         handleCancel && handleCancel(gid, e);
     },
     render(){
-        const {children} = this.props;
+        const {children, cancelBtn} = this.props;
         return (
             <div className="rsuite-upload-file-panel">
                 <div className="rsuite-upload-file-info">
                     {children}
                 </div>
+                {cancelBtn &&
                 <a className="rsuite-upload-file-cancel"
                    href="javascript:;"
                    onClick={this.handleClick}>
                     <i className="icon icon-close"></i>
-                </a>
+                </a>}
             </div>
         );
     }

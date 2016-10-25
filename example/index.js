@@ -11,8 +11,8 @@ const rootElement = document.getElementById('app');
 
 var App = React.createClass({
     render(){
-        const option = {
-            timeout       : 5e4,
+        const uploadOption = {
+            timeout       : 5e3,
             name          : 'sampleFile',
             multiple      : true,
             baseUrl       : '/upload',
@@ -36,14 +36,19 @@ var App = React.createClass({
                 console.log('FAIL', response, file);
             }
         };
-        const file = {
-            name: '测试文件.jpg',
-            gid : 1111
-        };
+        const progressPanelOption = {
+            file: {
+                name: '测试文件.jpg',
+                gid : 1111
+            },
+            handleCancel(gid, e){
+                console.log(gid, e);
+            }
+        }
         return (
             <div>
-                <Upload {...option}>上传文件</Upload>
-                <ProgressPanel/>
+                <Upload {...uploadOption}>上传文件</Upload>
+                <ProgressPanel {...progressPanelOption}/>
             </div>
         );
     }

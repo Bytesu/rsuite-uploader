@@ -6,7 +6,7 @@
   "scripts": {
     "server": "node server.js",
     "build": "rm -rf lib && babel src --out-dir lib",
-    "dev": "NODE_ENV=development NODE_TYPE=integration webpack-dev-server --hot --inline --progress --colors --port 8099 --host 0.0.0.0 --config webpack.dev.config.js"
+    "dev": "NODE_ENV=development NODE_TYPE=integration webpack-dev-server --hot --inline --progress --colors --port 8099 --host 0.0.0.0 --config webpack.dev.config.js --devtool eval"
   },
   "repository": {
     "type": "git",
