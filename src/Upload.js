@@ -16,54 +16,54 @@ import {
     DEFAULT_DATA_TYPE_JSON
 } from  './common/constant';
 import UploadButton from './component/UploadButton';
-
+import FilePanelList from './component/FilePanelList';
 
 const Upload = React.createClass({
     propTypes: {
-        accept             : PropTypes.array,
-        autoUpload         : PropTypes.bool,
-        baseUrl            : PropTypes.string,
-        dataType           : PropTypes.string,
-        fileNumLimit       : PropTypes.number,
-        fileSizeLimit      : PropTypes.number,
+        accept: PropTypes.array,
+        autoUpload: PropTypes.bool,
+        baseUrl: PropTypes.string,
+        dataType: PropTypes.string,
+        fileNumLimit: PropTypes.number,
+        fileSizeLimit: PropTypes.number,
         fileSingleSizeLimit: PropTypes.number,
-        multiple           : PropTypes.bool,
-        disabled           : PropTypes.bool,
-        name               : PropTypes.string,
-        timeout            : PropTypes.number,
-        withCredentials    : PropTypes.bool,
-        requestHeaders     : PropTypes.object,
-        beforeFileQueued   : PropTypes.func,
-        fileQueued         : PropTypes.func,
-        filesQueued        : PropTypes.func,
-        fileDeQueued       : PropTypes.func,
-        validateError      : PropTypes.func,
-        uploadError        : PropTypes.func,
-        uploadSuccess      : PropTypes.func,
-        uploadProgress     : PropTypes.func
+        multiple: PropTypes.bool,
+        disabled: PropTypes.bool,
+        name: PropTypes.string,
+        timeout: PropTypes.number,
+        withCredentials: PropTypes.bool,
+        requestHeaders: PropTypes.object,
+        beforeFileQueued: PropTypes.func,
+        fileQueued: PropTypes.func,
+        filesQueued: PropTypes.func,
+        fileDeQueued: PropTypes.func,
+        validateError: PropTypes.func,
+        uploadError: PropTypes.func,
+        uploadSuccess: PropTypes.func,
+        uploadProgress: PropTypes.func
     },
     getDefaultProps(){
         return {
-            autoUpload         : true,
-            fileNumLimit       : 10,
-            fileSizeLimit      : 50 * UNIT.MB,
+            autoUpload: true,
+            fileNumLimit: 10,
+            fileSizeLimit: 50 * UNIT.MB,
             fileSingleSizeLimit: 5 * UNIT.MB,
-            name               : 'rFile',
-            multiple           : false,
-            disabled           : false,
-            withCredentials    : false,
-            dataType           : 'json',
-            accept             : [],
-            formData           : {},
-            beforeFileQueued   : EMPTY_FUNCTION,
-            fileQueued         : EMPTY_FUNCTION,
-            filesQueued        : EMPTY_FUNCTION,
-            fileDeQueued       : EMPTY_FUNCTION,
-            validateError      : EMPTY_FUNCTION,
-            uploadError        : EMPTY_FUNCTION,
-            uploadSuccess      : EMPTY_FUNCTION,
-            uploadFail         : EMPTY_FUNCTION,
-            uploadProgress     : EMPTY_FUNCTION
+            name: 'rFile',
+            multiple: false,
+            disabled: false,
+            withCredentials: false,
+            dataType: 'json',
+            accept: [],
+            formData: {},
+            beforeFileQueued: EMPTY_FUNCTION,
+            fileQueued: EMPTY_FUNCTION,
+            filesQueued: EMPTY_FUNCTION,
+            fileDeQueued: EMPTY_FUNCTION,
+            validateError: EMPTY_FUNCTION,
+            uploadError: EMPTY_FUNCTION,
+            uploadSuccess: EMPTY_FUNCTION,
+            uploadFail: EMPTY_FUNCTION,
+            uploadProgress: EMPTY_FUNCTION
         };
     },
     getInitialState(){
@@ -109,7 +109,7 @@ const Upload = React.createClass({
                   uploadFail,
                   uploadProgress
               } = props;
-        if (!baseUrl) {
+        if (!disabled && !baseUrl) {
             throw new Error('baseUrl missing in props');
         }
         //上传URL
@@ -186,6 +186,18 @@ const Upload = React.createClass({
         this.uploadProgress = uploadProgress;
     },
     /**
+     * 文件面板列表点击"x"按钮
+     * @param gid - 文件id
+     * @param e
+     */
+    handleRemoveFile(gid, e){
+        this.setState({
+            'fileList': this.state.fileList.filter((file)=> {
+                return file.gid !== gid;
+            })
+        });
+    },
+    /**
      * 现代浏览器 file input 的change方法
      * @param e
      */
@@ -207,11 +219,9 @@ const Upload = React.createClass({
                 });
                 return;
             }
-            const {size} = _F;
             _F.status = FILE_STATUS_CODE.INITED;
             _F.gid = util.guid();
             fileList.push(_F);
-            fileList.sizeCount += size;
             this.fileQueued(_F);
         });
         this.setState({fileList});
@@ -247,12 +257,6 @@ const Upload = React.createClass({
          */
         if (size > this.fileSingleSizeLimit) {
             return VALIDATE_CODE.Q_EXCEED_SIZE_LIMIT;
-        }
-        /**
-         * 验证总文件大小
-         */
-        if (fileList + size > this.fileSizeLimit) {
-            return VALIDATE_CODE.F_EXCEED_SIZE;
         }
 
         return -1;
@@ -292,7 +296,7 @@ const Upload = React.createClass({
                 xhr.ontimeout = function() {
                     file.status = FILE_STATUS_CODE.ERROR;
                     T.uploadError({
-                        code   : UPLOAD_ERROR_CODE_STRING[UPLOAD_ERROR_CODE.TIMEOUT_ERROR],
+                        code: UPLOAD_ERROR_CODE_STRING[UPLOAD_ERROR_CODE.TIMEOUT_ERROR],
                         message: UPLOAD_ERROR_CODE_STRING[UPLOAD_ERROR_CODE.TIMEOUT_ERROR]
                     }, file);
                     isTimeout = false;
@@ -336,11 +340,11 @@ const Upload = React.createClass({
                         console.log(e);
                         file.status = FILE_STATUS_CODE.ERROR;
                         T.uploadError({
-                            code   : UPLOAD_ERROR_CODE_STRING[UPLOAD_ERROR_CODE.SERVER_ERROR],
+                            code: UPLOAD_ERROR_CODE_STRING[UPLOAD_ERROR_CODE.SERVER_ERROR],
                             message: {
                                 statusCode: xhr.status,
-                                response  : xhr.responseText,
-                                error     : e
+                                response: xhr.responseText,
+                                error: e
                             }
                         }, file);
                     }
@@ -363,16 +367,16 @@ const Upload = React.createClass({
                 try {
                     let resp = T.dataType === DEFAULT_DATA_TYPE_JSON ? JSON.parse(xhr.responseText) : xhr.responseText;
                     T.uploadError({
-                        type   : UPLOAD_ERROR_CODE_STRING[UPLOAD_ERROR_CODE.XHR_ERROR],
+                        type: UPLOAD_ERROR_CODE_STRING[UPLOAD_ERROR_CODE.XHR_ERROR],
                         message: resp
                     }, file);
                 } catch (e) {
                     T.uploadError({
-                        type   : UPLOAD_ERROR_CODE_STRING[UPLOAD_ERROR_CODE.XHR_ERROR],
+                        type: UPLOAD_ERROR_CODE_STRING[UPLOAD_ERROR_CODE.XHR_ERROR],
                         message: {
                             statusCode: xhr.status,
-                            response  : xhr.responseText,
-                            error     : e
+                            response: xhr.responseText,
+                            error: e
                         }
                     }, file);
                 }
@@ -384,7 +388,7 @@ const Upload = React.createClass({
             xhr.onabort = function() {
                 file.status = FILE_STATUS_CODE.ERROR;
                 T.uploadError({
-                    type   : UPLOAD_ERROR_CODE_STRING[UPLOAD_ERROR_CODE.XHR_ABORT],
+                    type: UPLOAD_ERROR_CODE_STRING[UPLOAD_ERROR_CODE.XHR_ABORT],
                     message: UPLOAD_ERROR_CODE_STRING[UPLOAD_ERROR_CODE.XHR_ABORT]
                 }, file);
             };
@@ -399,6 +403,15 @@ const Upload = React.createClass({
      * @return {XML}
      */
     modernUploadRender(){
+        const {disabled, state} = this;
+        const {fileList} = state;
+        const filePanelListProps = {
+            disabled,
+            fileList: fileList.map((file)=> {
+                return {file: file};
+            })
+        };
+
         return (
             <div className="rsuite-upload-wrap modern">
                 <UploadButton name={this.name}
@@ -409,12 +422,10 @@ const Upload = React.createClass({
                               handleChange={this.handleModernFileChange}>
                     {this.props.children}
                 </UploadButton>
-                <div className="rsuite-upload-file-list">
-
-                </div>
+                <FilePanelList disabled {...filePanelListProps} handleCancel={this.handleRemoveFile}/>
             </div>
         );
-    }
+    },
 });
 
 export default Upload;

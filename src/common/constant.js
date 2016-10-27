@@ -3,21 +3,21 @@
  * @type {{ARGS: string, ARRAY: string, BOOL: string, DATE: string, ERROR: string, FUNC: string, GEN: string, MAP: string, NUMBER: string, OBJECT: string, PROMISE: string, REGEXP: string, SET: string, STRING: string, SYMBOL: string, WEAKMAP: string, WEAKSET: string}}
  */
 const TYPE_REFERENCES = {
-    ARGS   : '[object Arguments]',
-    ARRAY  : '[object Array]',
-    BOOL   : '[object Boolean]',
-    DATE   : '[object Date]',
-    ERROR  : '[object Error]',
-    FUNC   : '[object Function]',
-    GEN    : '[object GeneratorFunction]',
-    MAP    : '[object Map]',
-    NUMBER : '[object Number]',
-    OBJECT : '[object Object]',
+    ARGS: '[object Arguments]',
+    ARRAY: '[object Array]',
+    BOOL: '[object Boolean]',
+    DATE: '[object Date]',
+    ERROR: '[object Error]',
+    FUNC: '[object Function]',
+    GEN: '[object GeneratorFunction]',
+    MAP: '[object Map]',
+    NUMBER: '[object Number]',
+    OBJECT: '[object Object]',
     PROMISE: '[object Promise]',
-    REGEXP : '[object RegExp]',
-    SET    : '[object Set]',
-    STRING : '[object String]',
-    SYMBOL : '[object Symbol]',
+    REGEXP: '[object RegExp]',
+    SET: '[object Set]',
+    STRING: '[object String]',
+    SYMBOL: '[object Symbol]',
     WEAKMAP: '[object WeakMap]',
     WEAKSET: '[object WeakSet]'
 };
@@ -50,10 +50,10 @@ const VALIDATE_ERROR_STRING = ['Q_EXCEED_NUM_LIMIT', 'Q_EXCEED_SIZE_LIMIT', 'Q_T
  * @type {{Q_EXCEED_NUM_LIMIT: number, Q_EXCEED_SIZE_LIMIT: number, Q_TYPE_DENIED: number, F_EXCEED_SIZE: number}}
  */
 const VALIDATE_CODE = {
-    'Q_EXCEED_NUM_LIMIT' : 0,
+    'Q_EXCEED_NUM_LIMIT': 0,
     'Q_EXCEED_SIZE_LIMIT': 1,
-    'Q_TYPE_DENIED'      : 2,
-    'F_EXCEED_SIZE'      : 3
+    'Q_TYPE_DENIED': 2,
+    'F_EXCEED_SIZE': 3
 };
 
 /**
@@ -67,9 +67,9 @@ const VALIDATE_CODE = {
  * @static
  */
 const FILE_STATUS_CODE = {
-    INITED  : 'INITED',    // 初始状态
+    INITED: 'INITED',    // 初始状态
     PROGRESS: 'PROGRESS',    // 上传中
-    ERROR   : 'ERROR',    // 上传出错
+    ERROR: 'ERROR',    // 上传出错
     COMPLETE: 'COMPLETE'    // 上传完成
 };
 
@@ -93,9 +93,9 @@ const UPLOAD_ERROR_CODE_STRING = ['TIMEOUT_ERROR', 'SERVER_ERROR', 'XHR_ERROR', 
  */
 const UPLOAD_ERROR_CODE = {
     TIMEOUT_ERROR: 0,
-    SERVER_ERROR : 1,
-    XHR_ERROR    : 2,
-    XHR_ABORT    : 3
+    SERVER_ERROR: 1,
+    XHR_ERROR: 2,
+    XHR_ABORT: 3
 };
 
 /**

@@ -3,6 +3,10 @@
  */
 import React, {PropTypes} from 'react';
 
+/**
+ * @class Progressbar
+ * @description 进度条
+ */
 const Progressbar = React.createClass({
     prototypes: {
         progress: PropTypes.number,

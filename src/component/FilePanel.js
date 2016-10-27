@@ -2,7 +2,11 @@
  * Created by Godfery on 2016/10/25.
  */
 import React, {PropTypes} from 'react';
-import util from '../common/util';
+
+/**
+ * @class FilePanel
+ * @description 文件面板
+ */
 const FilePanel = React.createClass({
     prototypes: {
         gid         : PropTypes.string,
