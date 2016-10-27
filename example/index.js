@@ -35,6 +35,9 @@ var App = React.createClass({
             requestHeaders: {
                 'Company-Name': 'Hypers'
             },
+            validateError(e){
+                console.log(e);
+            },
             uploadSuccess(response, file){
                 console.log('SUCCESS', response, file);
             },
@@ -56,7 +59,11 @@ var App = React.createClass({
         };
 
         const completePanelOption = Object.assign({}, progressPanelOption, {
-            showProgressBar: false
+            file:{
+                name: '测试文件.jpg',
+                gid: 1111,
+                showProgressBar: false
+            }
         });
 
         const readOnlyPanelOption = Object.assign({}, progressPanelOption, {
@@ -64,7 +71,7 @@ var App = React.createClass({
         });
 
         const FilePabelListOption = {
-            fileList: [progressPanelOption, completePanelOption, readOnlyPanelOption],
+            fileList: [progressPanelOption, completePanelOption],
             handleCancel(gid, e){
                 console.log(gid, e);
             }
@@ -73,6 +80,7 @@ var App = React.createClass({
         return (
             <div>
                 <Upload disabled={true}>上传文件</Upload>
+                <br/>
                 <Upload {...uploadOption}>上传文件</Upload>
                 <ProgressPanel {...progressPanelOption}/>
                 <ProgressPanel {...completePanelOption}/>

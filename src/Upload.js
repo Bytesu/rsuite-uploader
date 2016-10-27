@@ -79,6 +79,9 @@ const Upload = React.createClass({
     componentWillMount(){
         this._updateProps(this.props);
     },
+    componentWillUpdate(nextProps){
+        this._updateProps(nextProps);
+    },
     render() {
         return (util.ieInfo() < 0 || util.ieInfo() > 10) ? this.modernUploadRender() : (
             <p>暂不支持远古IE浏览器(IE6,IE7,IE8,IE9)</p>);
@@ -205,9 +208,6 @@ const Upload = React.createClass({
         let files = e.dataTransfer ? e.dataTransfer.files :
             e.target ? e.target.files : [];
         let fileList = this.state.fileList;
-        if (!fileList.sizeCount) {
-            fileList.sizeCount = 0;
-        }
         Array.from(files).forEach((_F)=> {
             if (this.beforeFileQueued(_F, files, fileList) === false) {
                 return;
@@ -221,6 +221,7 @@ const Upload = React.createClass({
             }
             _F.status = FILE_STATUS_CODE.INITED;
             _F.gid = util.guid();
+            _F.showProgressBar = true;
             fileList.push(_F);
             this.fileQueued(_F);
         });
@@ -327,7 +328,14 @@ const Upload = React.createClass({
                     if (xhr.readyState === 4 && xhr.status >= 200 && xhr.status < 400) {
                         let resp = T.dataType === DEFAULT_DATA_TYPE_JSON ? JSON.parse(xhr.responseText) : xhr.responseText;
                         file.status = FILE_STATUS_CODE.COMPLETE;
+                        file.progress = 100;
+                        T.modifyFileProps(file);
                         T.uploadSuccess(resp, file);
+                        //因为动画过度为2s，所以2s后再隐藏面板
+                        setTimeout(()=> {
+                            file.showProgressBar = false;
+                            T.modifyFileProps(file);
+                        }, 2e3);
                     } else if (xhr.readyState === 4) {
                         //xhr fail
                         let _resp = T.dataType === DEFAULT_DATA_TYPE_JSON ? JSON.parse(xhr.responseText) : xhr.responseText;
@@ -398,12 +406,24 @@ const Upload = React.createClass({
         //清空input的值
         this.refs['RSuiteUploadButton'].setValue('');
     },
+    modifyFileProps(file){
+        let {fileList} = this.state;
+        fileList = fileList.map((F)=> {
+            if (F.gid === file.gid) {
+                return file;
+            }
+            return F;
+        });
+        this.setState({
+            fileList
+        });
+    },
     /**
      * 现代浏览器HTML5实现 render
      * @return {XML}
      */
     modernUploadRender(){
-        const {disabled, state} = this;
+        const {name, multiple, disabled, state, accept} = this;
         const {fileList} = state;
         const filePanelListProps = {
             disabled,
@@ -411,13 +431,12 @@ const Upload = React.createClass({
                 return {file: file};
             })
         };
-
         return (
             <div className="rsuite-upload-wrap modern">
-                <UploadButton name={this.name}
-                              multiple={this.multiple}
-                              disabled={this.disabled}
-                              accept={this.accept}
+                <UploadButton name={name}
+                              multiple={multiple}
+                              disabled={disabled}
+                              accept={accept}
                               ref="RSuiteUploadButton"
                               handleChange={this.handleModernFileChange}>
                     {this.props.children}

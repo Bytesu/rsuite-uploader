@@ -13,20 +13,18 @@ const ProgressPanel = React.createClass({
     prototypes: {
         file: PropTypes.objectOf({
             name: PropTypes.string,
-            gid: PropTypes.string
+            gid: PropTypes.string,
+            progress: PropTypes.number,
+            showProgressBar: PropTypes.bool
         }),
-        progress: PropTypes.number,
-        showProgressBar: PropTypes.bool,
         disabled: PropTypes.bool,
         none: PropTypes.bool,
         handleCancel: PropTypes.func
     },
     getDefaultProps(){
         return {
-            progress: 1,
-            showProgressBar: true,
             disabled: false,
-            none:false
+            none: false
         };
     },
     handleCancel(gid, e){
@@ -34,8 +32,9 @@ const ProgressPanel = React.createClass({
         handleCancel && handleCancel(gid, e);
     },
     render(){
-        const {file, progress, showProgressBar, disabled,none} = this.props;
-        if(none){
+        const {file = {}, disabled, none} = this.props;
+        const {progress = 1, showProgressBar = true} = file;
+        if (none) {
             return (
                 <div className="rsuite-upload-progress-panel none">
                     无文件

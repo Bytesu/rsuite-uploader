@@ -35,7 +35,6 @@ const FilePanelList = React.createClass({
                 </div>
             );
         }
-
         return (
             <div className="rsuite-upload-file-list">
                 {
