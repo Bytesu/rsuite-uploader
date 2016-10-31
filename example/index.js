@@ -12,6 +12,28 @@ const rootElement = document.getElementById('app');
 
 var App = React.createClass({
     render(){
+        const progressPanelOption = {
+            file: {
+                name: '测试文件.jpg',
+                gid: 1111
+            },
+            handleCancel(gid, e){
+                console.log(gid, e);
+            }
+        };
+
+        const completePanelOption = Object.assign({}, progressPanelOption, {
+            file: {
+                name: '测试文件.jpg',
+                gid: 1111,
+                showProgressBar: false
+            }
+        });
+
+        const readOnlyPanelOption = Object.assign({}, progressPanelOption, {
+            disabled: true
+        });
+
         const uploadOption = {
             timeout: 30e3,
             name: 'sampleFile',
@@ -36,6 +58,13 @@ var App = React.createClass({
             requestHeaders: {
                 'Company-Name': 'Hypers'
             },
+            fileList: [{
+                name: '测试文件1.jpg',
+                gid: 1111233
+            },{
+                name: '测试文件2.jpg',
+                gid: 1111
+            }],
             validateError(e){
                 console.log(e);
             },
@@ -47,30 +76,11 @@ var App = React.createClass({
             },
             uploadFail(response, file){
                 console.log('FAIL', response, file);
-            }
-        };
-        const progressPanelOption = {
-            file: {
-                name: '测试文件.jpg',
-                gid: 1111
             },
-            handleCancel(gid, e){
-                console.log(gid, e);
+            fileDeQueued(a,b){
+                console.log(a,b);
             }
         };
-
-        const completePanelOption = Object.assign({}, progressPanelOption, {
-            file: {
-                name: '测试文件.jpg',
-                gid: 1111,
-                showProgressBar: false
-            }
-        });
-
-        const readOnlyPanelOption = Object.assign({}, progressPanelOption, {
-            disabled: true
-        });
-
         const FilePabelListOption = {
             fileList: [progressPanelOption, completePanelOption],
             handleCancel(gid, e){
@@ -83,11 +93,9 @@ var App = React.createClass({
                 <Upload disabled={true}>上传文件</Upload>
                 <br/>
                 <Upload {...uploadOption}>上传文件</Upload>
-                {/*<ProgressPanel {...progressPanelOption}/>
-                 <ProgressPanel {...completePanelOption}/>
-                 <ProgressPanel {...readOnlyPanelOption}/>
-                 <FilePanelList fileList={[]} disabled={true}/>
-                 <FilePanelList {...FilePabelListOption}/>*/}
+
+                <FilePanelList fileList={[]} disabled={true}/>
+                <FilePanelList {...FilePabelListOption}/>
             </div>
         );
     }

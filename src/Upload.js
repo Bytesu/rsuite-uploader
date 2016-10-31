@@ -73,7 +73,12 @@ const Upload = React.createClass({
     getInitialState(){
         let {fileList = []} = this.props;
         fileList = fileList.map((file)=> {
-            file.gid = util.guid();
+            const {gid} = file;
+            file = Object.assign({}, new File([], file.name), file, {
+                gid: gid ? gid : util.guid(),
+                status: FILE_STATUS_CODE.DECLARE,
+                showProgressBar: false
+            });
             return file;
         });
         return {
@@ -203,12 +208,17 @@ const Upload = React.createClass({
      * @param e
      */
     handleRemoveFile(gid, e){
+        const file = this.state.fileList.filter((file)=> {
+            return file.gid === gid;
+        })[0];
+        const fileList = this.state.fileList.filter((file)=> {
+            return file.gid !== gid;
+        });
         this.setState({
-            fileList: this.state.fileList.filter((file)=> {
-                return file.gid !== gid;
-            }),
+            fileList: fileList,
             errorMsg: undefined
         });
+        this.fileDeQueued(gid, file, fileList);
     },
     /**
      * 现代浏览器 file input 的change方法

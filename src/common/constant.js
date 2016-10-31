@@ -72,7 +72,8 @@ export const FILE_STATUS_CODE = {
     INITED: 'INITED',    // 初始状态
     PROGRESS: 'PROGRESS',    // 上传中
     ERROR: 'ERROR',    // 上传出错
-    COMPLETE: 'COMPLETE'    // 上传完成
+    COMPLETE: 'COMPLETE',   // 上传完成
+    DECLARE: 'DECLARE' //声明的（外部传入的）
 };
 export const FILE_STATUS_STRING = {
     INITED: '初始状态',

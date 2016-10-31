@@ -68,7 +68,9 @@
 > 当一批文件添加进队列以后触发。
 
 ### fileDeQueued
-- file `{File}`File对象
+- gid `文件id` fileId
+- file `{File}` File对象
+- fileList `{File[]}`数组，内容为整个file队列
 
 > 当文件被移除队列后触发。
 
