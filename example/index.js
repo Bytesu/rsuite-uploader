@@ -10,6 +10,7 @@ const rootElement = document.getElementById('app');
 
 var App = React.createClass({
     render(){
+        const T = this;
         const fileList = [{
             name: '测试文件1.jpg',
             gid: 1111233
@@ -54,8 +55,8 @@ var App = React.createClass({
             uploadFail(response, file){
                 console.log('FAIL', response, file);
             },
-            fileDeQueued(a, b){
-                console.log(a, b);
+            fileDeQueued(gid, file, files){
+                console.log(gid, file, files);
             }
         };
 

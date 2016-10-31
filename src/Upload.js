@@ -211,12 +211,16 @@ const Upload = React.createClass({
         const file = this.state.fileList.filter((file)=> {
             return file.gid === gid;
         })[0];
+        if (file.xhr && file.xhr.readyState !== 4) {
+            file.xhr.abort();
+            file.xhr = null;
+        }
         const fileList = this.state.fileList.filter((file)=> {
             return file.gid !== gid;
         });
         this.setState({
             fileList: fileList,
-            errorMsg: undefined
+            errorMsg: null
         });
         this.fileDeQueued(gid, file, fileList);
     },
@@ -325,7 +329,7 @@ const Upload = React.createClass({
                 xhr.ontimeout = function() {
                     file.status = FILE_STATUS_CODE.ERROR;
                     T.uploadError({
-                        code: UPLOAD_ERROR_CODE_STRING[UPLOAD_ERROR_CODE.TIMEOUT_ERROR],
+                        type: UPLOAD_ERROR_CODE_STRING[UPLOAD_ERROR_CODE.TIMEOUT_ERROR],
                         message: UPLOAD_ERROR_CODE_STRING[UPLOAD_ERROR_CODE.TIMEOUT_ERROR]
                     }, file);
                     isTimeout = false;
@@ -366,16 +370,18 @@ const Upload = React.createClass({
                         }, 6e2);
                     } else if (xhr.readyState === 4) {
                         //xhr fail
-                        let _resp = T.dataType === DEFAULT_DATA_TYPE_JSON ? JSON.parse(xhr.responseText) : xhr.responseText;
+                        let _resp = T.dataType === (DEFAULT_DATA_TYPE_JSON && xhr.responseText) ? JSON.parse(xhr.responseText) : xhr.responseText;
                         file.status = FILE_STATUS_CODE.ERROR;
+                        T.modifyFileProps(file);
                         T.uploadFail(_resp, file);
                     }
                 } catch (e) {
                     //超时的错误 不在这里处理
                     if (!isTimeout) {
                         file.status = FILE_STATUS_CODE.ERROR;
+                        T.modifyFileProps(file);
                         T.uploadError({
-                            code: UPLOAD_ERROR_CODE_STRING[UPLOAD_ERROR_CODE.SERVER_ERROR],
+                            type: UPLOAD_ERROR_CODE_STRING[UPLOAD_ERROR_CODE.SERVER_ERROR],
                             message: {
                                 statusCode: xhr.status,
                                 response: xhr.responseText,
