@@ -4,6 +4,10 @@
 import React, {PropTypes} from 'react';
 import ProgressBar from './ProgressBar';
 import FilePanel from './FilePanel';
+import {
+    FILE_STATUS_STRING,
+    FILE_STATUS_CODE
+} from  '../common/constant';
 
 /**
  * @class ProgressPanel
@@ -33,7 +37,6 @@ const ProgressPanel = React.createClass({
     },
     render(){
         const {file = {}, disabled, none} = this.props;
-        const {progress = 1, showProgressBar = true} = file;
         if (none) {
             return (
                 <div className="rsuite-upload-progress-panel none">
@@ -41,10 +44,15 @@ const ProgressPanel = React.createClass({
                 </div>
             );
         }
+        const {name, status, progress = 1, showProgressBar = true} = file;
+        const statusStr = status === FILE_STATUS_CODE.PROGRESS && progress ? `${progress}%` : FILE_STATUS_STRING[status];
+        const filePanelText = statusStr ? `${name} - ${statusStr}` : name;
         return (
             <div className="rsuite-upload-progress-panel">
                 <FilePanel gid={file.gid} handleCancel={this.handleCancel}
-                           cancelBtn={!disabled}>{file.name}</FilePanel>
+                           cancelBtn={!disabled}>
+                    <span className="rsuite-upload-file-span">{filePanelText}</span>
+                </FilePanel>
                 <ProgressBar progress={progress} show={!disabled && showProgressBar}/>
             </div>
         );

@@ -50,7 +50,7 @@ if (process.env.NODE_TYPE === 'integration') {
     config.devServer = {
         proxy: {
             '/upload': {
-                target: 'http://localhost:3000',
+                target: 'http://localhost:3030',
                 secure: false
             }
         }

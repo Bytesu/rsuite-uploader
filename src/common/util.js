@@ -20,6 +20,14 @@ export default {
         return this.getType(func) === TYPE_REFERENCES.FUNC;
     },
     /**
+     * 判断obj是否为null
+     * @param obj
+     * @return {boolean}
+     */
+    isNull(obj){
+        return this.getType(obj) === TYPE_REFERENCES.NULL;
+    },
+    /**
      *
      * @param accept
      * @returns {String}
@@ -71,5 +79,60 @@ export default {
      */
     getExtName(fileName) {
         return fileName.split('.').pop();
+    },
+    /**
+     * 转换成10进制
+     * @param arg
+     * @param [num=2] - 保留几位小数
+     * @return {*}
+     */
+    toDecimal(arg, num = 2) {
+
+        if (this.isNull(arg) || arg === undefined || arg === '--') {
+            return '--';
+        }
+
+        if (!arg || arg === '--') {
+            return '0.00';
+        }
+        try {
+            arg = arg.toFixed(num);
+        } catch (e) {
+            return arg;
+        }
+
+        return arg;
+    },
+    /**
+     * 两数相乘（保留两位小数）
+     * @param arg1
+     * @param arg2
+     * @param [precision=2] - 精度
+     * @param [sign=] - 后缀
+     * @return {*}
+     */
+    floatMul(arg1, arg2, precision = 2, sign = '') {
+        if (this.isNull(arg1)) {
+            return '--';
+        }
+
+        if (!arg1 || !arg2) {
+            return `0.${Array(precision + 1).join(0)}`;
+        }
+
+        var m  = 0,
+            s1 = arg1.toString(),
+            s2 = arg2.toString();
+
+        try {
+            m += s1.split('.')[1].length;
+        } catch (e) {}
+        try {
+            m += s2.split('.')[1].length;
+        } catch (e) {}
+
+        var n = Number(s1.replace('.', '')) * Number(s2.replace('.', '')) / Math.pow(10, m);
+        return this.toDecimal(n, precision) + sign;
+
     }
 };

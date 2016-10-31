@@ -4,10 +4,16 @@
 import './less/main.less';
 
 import React, {PropTypes} from 'react';
+import classnames from 'classnames';
 import util from './common/util';
+
+import UploadButton from './component/UploadButton';
+import FilePanelList from './component/FilePanelList';
+
 import {
     UNIT,
-    VALIDATE_ERROR_STRING,
+    VALIDATE_ERROR_CODE_STRING,
+    VALIDATE_ERROR_CODE,
     VALIDATE_CODE,
     EMPTY_FUNCTION,
     FILE_STATUS_CODE,
@@ -15,8 +21,6 @@ import {
     UPLOAD_ERROR_CODE_STRING,
     DEFAULT_DATA_TYPE_JSON
 } from  './common/constant';
-import UploadButton from './component/UploadButton';
-import FilePanelList from './component/FilePanelList';
 
 const Upload = React.createClass({
     propTypes: {
@@ -73,13 +77,14 @@ const Upload = React.createClass({
             return file;
         });
         return {
-            fileList
+            fileList,
+            disabledUploadBtn: false
         };
     },
     componentWillMount(){
         this._updateProps(this.props);
     },
-    componentWillUpdate(nextProps){
+    componentWillUpdate(nextProps, nextState){
         this._updateProps(nextProps);
     },
     render() {
@@ -148,11 +153,15 @@ const Upload = React.createClass({
         /**
          * 文件加入队列后触发
          * @type {EMPTY_FUNCTION}
+         * @param file {File} - 当前文件
+         * @param fileList {File[]} - 文件列表
          */
         this.fileQueued = fileQueued;
         /**
          * 一批文件加入队列后触发（不管是否成功加入，均触发此方法）
          * @type {EMPTY_FUNCTION}
+         * @param files {File[]} - 本次上传的所有文件
+         * @param fileList {File[]} - 文件列表
          */
         this.filesQueued = filesQueued;
         this.fileDeQueued = fileDeQueued;
@@ -195,9 +204,10 @@ const Upload = React.createClass({
      */
     handleRemoveFile(gid, e){
         this.setState({
-            'fileList': this.state.fileList.filter((file)=> {
+            fileList: this.state.fileList.filter((file)=> {
                 return file.gid !== gid;
-            })
+            }),
+            errorMsg: undefined
         });
     },
     /**
@@ -215,7 +225,10 @@ const Upload = React.createClass({
             const validCode = this.validFile(_F, fileList);
             if (validCode > -1) {
                 this.validateError({
-                    code: VALIDATE_ERROR_STRING[validCode]
+                    code: VALIDATE_ERROR_CODE[validCode]
+                });
+                this.setState({
+                    errorMsg: VALIDATE_ERROR_CODE_STRING[validCode]
                 });
                 return;
             }
@@ -223,7 +236,12 @@ const Upload = React.createClass({
             _F.gid = util.guid();
             _F.showProgressBar = true;
             fileList.push(_F);
-            this.fileQueued(_F);
+            if (fileList.length === this.fileNumLimit) {
+                this.setState({
+                    errorMsg: '文件已达最大数量'
+                });
+            }
+            this.fileQueued(_F, fileList);
         });
         this.setState({fileList});
         //文件全部加入队列后执行的回调
@@ -331,11 +349,11 @@ const Upload = React.createClass({
                         file.progress = 100;
                         T.modifyFileProps(file);
                         T.uploadSuccess(resp, file);
-                        //因为动画过度为2s，所以2s后再隐藏面板
+                        //因为动画过度为.6s，所以.6s后再隐藏面板
                         setTimeout(()=> {
                             file.showProgressBar = false;
                             T.modifyFileProps(file);
-                        }, 2e3);
+                        }, 6e2);
                     } else if (xhr.readyState === 4) {
                         //xhr fail
                         let _resp = T.dataType === DEFAULT_DATA_TYPE_JSON ? JSON.parse(xhr.responseText) : xhr.responseText;
@@ -345,7 +363,6 @@ const Upload = React.createClass({
                 } catch (e) {
                     //超时的错误 不在这里处理
                     if (!isTimeout) {
-                        console.log(e);
                         file.status = FILE_STATUS_CODE.ERROR;
                         T.uploadError({
                             code: UPLOAD_ERROR_CODE_STRING[UPLOAD_ERROR_CODE.SERVER_ERROR],
@@ -363,8 +380,16 @@ const Upload = React.createClass({
              * 处理上传过程
              * @type {XMLHttpRequest.upload.onprogress}
              */
-            xhr.onprogress = xhr.upload.onprogress = function(progress) {
-                T.uploadProgress(progress, file);
+            xhr.onprogress = xhr.upload.onprogress = function(e) {
+                let percentage = 0;
+                if (e.lengthComputable) {
+                    percentage = util.floatMul((e.loaded / e.total), 100, 0);
+                }
+                if (percentage) {
+                    file.progress = percentage;
+                    T.modifyFileProps(file);
+                }
+                T.uploadProgress(percentage, file, e);
             };
 
             /**
@@ -402,10 +427,16 @@ const Upload = React.createClass({
             };
 
             xhr.send(formData);
+            file.status = FILE_STATUS_CODE.PROGRESS;
+            T.modifyFileProps(file);
         });
         //清空input的值
         this.refs['RSuiteUploadButton'].setValue('');
     },
+    /**
+     * 修改文件队列
+     * @param file
+     */
     modifyFileProps(file){
         let {fileList} = this.state;
         fileList = fileList.map((F)=> {
@@ -423,28 +454,35 @@ const Upload = React.createClass({
      * @return {XML}
      */
     modernUploadRender(){
-        const {name, multiple, disabled, state, accept} = this;
-        const {fileList} = state;
+        const {name, multiple, disabled, state, accept, fileNumLimit} = this;
+        const {fileList, errorMsg} = state;
         const filePanelListProps = {
             disabled,
             fileList: fileList.map((file)=> {
                 return {file: file};
             })
         };
+        const disabledUploadBtn = !(fileList.length < fileNumLimit);
+        const wrapCls = classnames('rsuite-upload-wrap modern', {'has-error': errorMsg});
+        const errorSpanCls = classnames({
+            'help-block': !disabled,
+            'error': errorMsg
+        });
         return (
-            <div className="rsuite-upload-wrap modern">
+            <div className={wrapCls}>
                 <UploadButton name={name}
                               multiple={multiple}
-                              disabled={disabled}
+                              disabled={disabled || disabledUploadBtn}
                               accept={accept}
                               ref="RSuiteUploadButton"
                               handleChange={this.handleModernFileChange}>
                     {this.props.children}
                 </UploadButton>
+                <span className={errorSpanCls}>{errorMsg}</span>
                 <FilePanelList disabled {...filePanelListProps} handleCancel={this.handleRemoveFile}/>
             </div>
         );
-    },
+    }
 });
 
 export default Upload;

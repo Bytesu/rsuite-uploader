@@ -13,9 +13,10 @@ const rootElement = document.getElementById('app');
 var App = React.createClass({
     render(){
         const uploadOption = {
-            timeout: 5e3,
+            timeout: 30e3,
             name: 'sampleFile',
             multiple: true,
+            fileNumLimit: 3,
             baseUrl: '/upload',
             accept: [
                 {
@@ -59,7 +60,7 @@ var App = React.createClass({
         };
 
         const completePanelOption = Object.assign({}, progressPanelOption, {
-            file:{
+            file: {
                 name: '测试文件.jpg',
                 gid: 1111,
                 showProgressBar: false
@@ -82,11 +83,11 @@ var App = React.createClass({
                 <Upload disabled={true}>上传文件</Upload>
                 <br/>
                 <Upload {...uploadOption}>上传文件</Upload>
-                <ProgressPanel {...progressPanelOption}/>
-                <ProgressPanel {...completePanelOption}/>
-                <ProgressPanel {...readOnlyPanelOption}/>
-                <FilePanelList fileList={[]} disabled={true}/>
-                <FilePanelList {...FilePabelListOption}/>
+                {/*<ProgressPanel {...progressPanelOption}/>
+                 <ProgressPanel {...completePanelOption}/>
+                 <ProgressPanel {...readOnlyPanelOption}/>
+                 <FilePanelList fileList={[]} disabled={true}/>
+                 <FilePanelList {...FilePabelListOption}/>*/}
             </div>
         );
     }

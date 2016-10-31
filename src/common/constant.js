@@ -2,7 +2,7 @@
  * Object to string 类型参考
  * @type {{ARGS: string, ARRAY: string, BOOL: string, DATE: string, ERROR: string, FUNC: string, GEN: string, MAP: string, NUMBER: string, OBJECT: string, PROMISE: string, REGEXP: string, SET: string, STRING: string, SYMBOL: string, WEAKMAP: string, WEAKSET: string}}
  */
-const TYPE_REFERENCES = {
+export const TYPE_REFERENCES = {
     ARGS: '[object Arguments]',
     ARRAY: '[object Array]',
     BOOL: '[object Boolean]',
@@ -19,16 +19,17 @@ const TYPE_REFERENCES = {
     STRING: '[object String]',
     SYMBOL: '[object Symbol]',
     WEAKMAP: '[object WeakMap]',
-    WEAKSET: '[object WeakSet]'
+    WEAKSET: '[object WeakSet]',
+    NULL: '[object Null]'
 };
 
 /**
  * 单位
  * @type {{KB: number, MB: number}}
  */
-const KB = 1024;
-const MB = 1024 * KB;
-const UNIT = {
+export const KB = 1024;
+export const MB = 1024 * KB;
+export const UNIT = {
     KB: KB,
     MB: MB,
 };
@@ -40,7 +41,8 @@ const UNIT = {
  * @const VALIDATE_ERROR_STRING
  * @type {String[]}
  */
-const VALIDATE_ERROR_STRING = ['Q_EXCEED_NUM_LIMIT', 'Q_EXCEED_SIZE_LIMIT', 'Q_TYPE_DENIED', 'F_EXCEED_SIZE'];
+export const VALIDATE_ERROR_CODE = ['Q_EXCEED_NUM_LIMIT', 'Q_EXCEED_SIZE_LIMIT', 'Q_TYPE_DENIED'];
+export const VALIDATE_ERROR_CODE_STRING = ['文件数超过最大数目', '单个文件大小超过限制', '文件类型错误'];
 /**
  * Q_EXCEED_NUM_LIMIT: 0 文件数超过最大数目
  * Q_EXCEED_SIZE_LIMIT: 1 单个文件大小超过限制
@@ -49,7 +51,7 @@ const VALIDATE_ERROR_STRING = ['Q_EXCEED_NUM_LIMIT', 'Q_EXCEED_SIZE_LIMIT', 'Q_T
  * @constant VALIDATE_CODE
  * @type {{Q_EXCEED_NUM_LIMIT: number, Q_EXCEED_SIZE_LIMIT: number, Q_TYPE_DENIED: number, F_EXCEED_SIZE: number}}
  */
-const VALIDATE_CODE = {
+export const VALIDATE_CODE = {
     'Q_EXCEED_NUM_LIMIT': 0,
     'Q_EXCEED_SIZE_LIMIT': 1,
     'Q_TYPE_DENIED': 2,
@@ -66,11 +68,17 @@ const VALIDATE_CODE = {
  * @const FILE_STATUS_CODE
  * @static
  */
-const FILE_STATUS_CODE = {
+export const FILE_STATUS_CODE = {
     INITED: 'INITED',    // 初始状态
     PROGRESS: 'PROGRESS',    // 上传中
     ERROR: 'ERROR',    // 上传出错
     COMPLETE: 'COMPLETE'    // 上传完成
+};
+export const FILE_STATUS_STRING = {
+    INITED: '初始状态',
+    PROGRESS: '上传中',
+    ERROR: '上传出错',
+    COMPLETE: '上传完成'
 };
 
 /**
@@ -81,7 +89,8 @@ const FILE_STATUS_CODE = {
  * @const {UPLOAD_ERROR_CODE_STRING}
  * @type {string[]}
  */
-const UPLOAD_ERROR_CODE_STRING = ['TIMEOUT_ERROR', 'SERVER_ERROR', 'XHR_ERROR', 'XHR_ABORT'];
+export const UPLOAD_ERROR_CODE_STRING = ['TIMEOUT_ERROR', 'SERVER_ERROR', 'XHR_ERROR', 'XHR_ABORT'];
+export const UPLOAD_ERROR_STRING = ['上传超时', '服务器异常', '上传错误', '上传被终止'];
 /**
  *
  * TIMEOUT_ERROR: 0 超时
@@ -91,7 +100,7 @@ const UPLOAD_ERROR_CODE_STRING = ['TIMEOUT_ERROR', 'SERVER_ERROR', 'XHR_ERROR', 
  * @const {UPLOAD_ERROR_CODE}
  * @type {{TIMEOUT_ERROR: number, SERVER_ERROR: number, XHR_ERROR: number, XHR_ABORT: number}}
  */
-const UPLOAD_ERROR_CODE = {
+export const UPLOAD_ERROR_CODE = {
     TIMEOUT_ERROR: 0,
     SERVER_ERROR: 1,
     XHR_ERROR: 2,
@@ -102,22 +111,10 @@ const UPLOAD_ERROR_CODE = {
  * 空方法
  * @constructor
  */
-const EMPTY_FUNCTION = function() {};
+export const EMPTY_FUNCTION = function() {};
 
 /**
  * 默认数据类型 json
  * @type {string}
  */
-const DEFAULT_DATA_TYPE_JSON = 'json';
-
-export {
-    TYPE_REFERENCES,
-    UNIT,
-    VALIDATE_ERROR_STRING,
-    VALIDATE_CODE,
-    EMPTY_FUNCTION,
-    FILE_STATUS_CODE,
-    UPLOAD_ERROR_CODE,
-    UPLOAD_ERROR_CODE_STRING,
-    DEFAULT_DATA_TYPE_JSON
-};
+export const DEFAULT_DATA_TYPE_JSON = 'json';
