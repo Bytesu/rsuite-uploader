@@ -12,28 +12,13 @@ const rootElement = document.getElementById('app');
 
 var App = React.createClass({
     render(){
-        const progressPanelOption = {
-            file: {
-                name: '测试文件.jpg',
-                gid: 1111
-            },
-            handleCancel(gid, e){
-                console.log(gid, e);
-            }
-        };
-
-        const completePanelOption = Object.assign({}, progressPanelOption, {
-            file: {
-                name: '测试文件.jpg',
-                gid: 1111,
-                showProgressBar: false
-            }
-        });
-
-        const readOnlyPanelOption = Object.assign({}, progressPanelOption, {
-            disabled: true
-        });
-
+        const fileList = [{
+            name: '测试文件1.jpg',
+            gid: 1111233
+        }, {
+            name: '测试文件2.jpg',
+            gid: 1111
+        }];
         const uploadOption = {
             timeout: 30e3,
             name: 'sampleFile',
@@ -58,13 +43,7 @@ var App = React.createClass({
             requestHeaders: {
                 'Company-Name': 'Hypers'
             },
-            fileList: [{
-                name: '测试文件1.jpg',
-                gid: 1111233
-            },{
-                name: '测试文件2.jpg',
-                gid: 1111
-            }],
+            fileList: fileList,
             validateError(e){
                 console.log(e);
             },
@@ -77,25 +56,21 @@ var App = React.createClass({
             uploadFail(response, file){
                 console.log('FAIL', response, file);
             },
-            fileDeQueued(a,b){
-                console.log(a,b);
-            }
-        };
-        const FilePabelListOption = {
-            fileList: [progressPanelOption, completePanelOption],
-            handleCancel(gid, e){
-                console.log(gid, e);
+            fileDeQueued(a, b){
+                console.log(a, b);
             }
         };
 
         return (
-            <div>
-                <Upload disabled={true}>上传文件</Upload>
-                <br/>
-                <Upload {...uploadOption}>上传文件</Upload>
-
-                <FilePanelList fileList={[]} disabled={true}/>
-                <FilePanelList {...FilePabelListOption}/>
+            <div className="container">
+                <div className="col-sm-12">
+                    <h3>禁用状态</h3>
+                    <Upload disabled={true}>上传文件</Upload>
+                    <h3>禁用状态(有文件)</h3>
+                    <Upload disabled={true} fileList={fileList}>上传文件</Upload>
+                    <h3>启用状态</h3>
+                    <Upload {...uploadOption}>上传文件</Upload>
+                </div>
             </div>
         );
     }
