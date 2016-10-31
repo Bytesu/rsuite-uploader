@@ -5,8 +5,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import Upload from '../src/main';
-import ProgressPanel from '../src/component/ProgressPanel';
-import FilePanelList from '../src/component/FilePanelList';
 
 const rootElement = document.getElementById('app');
 
