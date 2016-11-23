@@ -1,5 +1,3 @@
-[TOC]
-
 # Rsuite Upload
 ## props
 ### name

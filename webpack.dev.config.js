@@ -40,8 +40,14 @@ const config = {
             test: /\.less$/,
             loader: ExtractTextPlugin.extract('style-loader', 'css-loader!less-loader')
         }, {
-            test: /\.css/,
+            test: /\.css$/,
             loader: ExtractTextPlugin.extract('style-loader', 'css-loader')
+        }, {
+            test: /\.json$/,
+            loader: 'json'
+        }, {
+            test: /\.md$/,
+            loader: 'includes'
         }]
     }
 };
@@ -55,7 +61,7 @@ if (process.env.NODE_TYPE === 'integration') {
             }
         }
     };
-};
-
+}
+;
 
 module.exports = config;

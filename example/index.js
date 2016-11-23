@@ -2,13 +2,15 @@
  * Created by Godfery on 2016/10/10.
  */
 import React from 'react';
-import ReactDOM from 'react-dom';
+import {render} from 'react-dom';
+import Markdown from  'react-markdown';
+import {Router, Route, Link, browserHistory} from 'react-router';
 
 import Upload from '../src/main';
 
 const rootElement = document.getElementById('app');
 
-var App = React.createClass({
+const App = React.createClass({
     render(){
         const T = this;
         const fileList = [{
@@ -59,23 +61,45 @@ var App = React.createClass({
                 console.log(gid, file, files);
             }
         };
-
+        const demo1 = require('./demo/demo1.md');
+        const demo2 = require('./demo/demo2.md');
+        const demo3 = require('./demo/demo3.md');
         return (
             <div className="container">
                 <div className="col-sm-12">
+                    <h2>演示</h2>
                     <h3>禁用状态</h3>
                     <Upload disabled={true}>上传文件</Upload>
+                    <h4>代码</h4>
+                    <Markdown source={demo1}/>
                     <h3>禁用状态(有文件)</h3>
                     <Upload disabled={true} fileList={fileList}>上传文件</Upload>
+                    <h4>代码</h4>
+                    <Markdown source={demo2}/>
                     <h3>启用状态</h3>
                     <Upload {...uploadOption}>上传文件</Upload>
+                    <h4>代码</h4>
+                    <Markdown source={demo3}/>
+                    <Link to="/document">详细文档</Link>
                 </div>
             </div>
         );
     }
 });
 
-ReactDOM.render(
-    <App/>,
-    rootElement
-);
+const Document = React.createClass({
+    render(){
+        const docs = require('../docs/api.md');
+        return (
+            <Markdown source={docs}/>
+        );
+    }
+});
+
+render((
+    <Router history={browserHistory}>
+        <Route path="/" component={App}>
+            <Route path="document" component={Document}/>
+        </Route>
+    </Router>
+), rootElement);
