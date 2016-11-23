@@ -42,3 +42,4 @@ jspm_packages
 /cache/
 /lib/
 .DS_Store
+/npm-debug.log.*

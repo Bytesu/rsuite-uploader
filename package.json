@@ -32,7 +32,8 @@
   "dependencies": {
     "classnames": "^2.2.5",
     "react": "^0.14.2",
-    "react-dom": "^0.14.8"
+    "react-dom": "^0.14.8",
+    "rsuite": "0.0.20"
   },
   "devDependencies": {
     "babel-cli": "^6.16.0",
@@ -53,7 +54,6 @@
     "html-webpack-plugin": "^2.24.0",
     "less": "^2.7.1",
     "less-loader": "^2.2.3",
-    "rsuite": "0.0.20",
     "style-loader": "^0.13.1",
     "uuid": "^2.0.3",
     "webpack": "^1.13.2",

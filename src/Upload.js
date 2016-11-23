@@ -74,7 +74,11 @@ const Upload = React.createClass({
         let {fileList = []} = this.props;
         fileList = fileList.map((file)=> {
             const {gid} = file;
-            file = Object.assign({}, new File([], file.name), file, {
+            let _file = {};
+            if (File) {
+                _file = new File([], file.name);
+            }
+            file = Object.assign({}, _file, file, {
                 gid: gid ? gid : util.guid(),
                 status: FILE_STATUS_CODE.DECLARE,
                 showProgressBar: false
@@ -93,6 +97,7 @@ const Upload = React.createClass({
         this._updateProps(nextProps);
     },
     render() {
+        // return (<p>暂不支持远古IE浏览器(IE6,IE7,IE8,IE9)</p>);
         return (util.ieInfo() < 0 || util.ieInfo() > 10) ? this.modernUploadRender() : (
             <p>暂不支持远古IE浏览器(IE6,IE7,IE8,IE9)</p>);
     },
