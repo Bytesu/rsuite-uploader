@@ -62,6 +62,5 @@ if (process.env.NODE_TYPE === 'integration') {
         }
     };
 }
-;
 
 module.exports = config;

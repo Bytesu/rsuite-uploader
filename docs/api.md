@@ -1,4 +1,3 @@
-# Rsuite Upload
 ## props
 ### name
 {String} [可选] [默认值：rFile]提交时，文件在formData中的name
@@ -107,11 +106,6 @@
 - file `{File}`File对象
 
 > 当文件上传失败时触发。服务端statusCode>400时
-
-### uploadComplete
-- file `{File}` [可选]File对象
-
-> 不管成功或者失败，文件上传完成时触发。
 
 ### validateError
 - type `{String}`错误类型。

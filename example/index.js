@@ -4,13 +4,26 @@
 import React from 'react';
 import {render} from 'react-dom';
 import Markdown from  'react-markdown';
-import {Router, Route, Link, browserHistory} from 'react-router';
+import {Router, Route, IndexRoute, Link, hashHistory} from 'react-router';
 
 import Upload from '../src/main';
 
 const rootElement = document.getElementById('app');
 
 const App = React.createClass({
+    render(){
+        return (
+            <div className="container">
+                <div className="col-sm-12">
+                    <h1>Rsuite Upload</h1>
+                    {this.props.children}
+                </div>
+            </div>
+        );
+    }
+});
+
+const Home = React.createClass({
     render(){
         const T = this;
         const fileList = [{
@@ -65,23 +78,21 @@ const App = React.createClass({
         const demo2 = require('./demo/demo2.md');
         const demo3 = require('./demo/demo3.md');
         return (
-            <div className="container">
-                <div className="col-sm-12">
-                    <h2>演示</h2>
-                    <h3>禁用状态</h3>
-                    <Upload disabled={true}>上传文件</Upload>
-                    <h4>代码</h4>
-                    <Markdown source={demo1}/>
-                    <h3>禁用状态(有文件)</h3>
-                    <Upload disabled={true} fileList={fileList}>上传文件</Upload>
-                    <h4>代码</h4>
-                    <Markdown source={demo2}/>
-                    <h3>启用状态</h3>
-                    <Upload {...uploadOption}>上传文件</Upload>
-                    <h4>代码</h4>
-                    <Markdown source={demo3}/>
-                    <Link to="/document">详细文档</Link>
-                </div>
+            <div>
+                <h2>演示</h2>
+                <h3>禁用状态</h3>
+                <Upload disabled={true}>上传文件</Upload>
+                <h4>代码</h4>
+                <Markdown source={demo1}/>
+                <h3>禁用状态(有文件)</h3>
+                <Upload disabled={true} fileList={fileList}>上传文件</Upload>
+                <h4>代码</h4>
+                <Markdown source={demo2}/>
+                <h3>启用状态</h3>
+                <Upload {...uploadOption}>上传文件</Upload>
+                <h4>代码</h4>
+                <Markdown source={demo3}/>
+                <Link to="/document">详细文档</Link>
             </div>
         );
     }
@@ -97,8 +108,9 @@ const Document = React.createClass({
 });
 
 render((
-    <Router history={browserHistory}>
+    <Router history={hashHistory}>
         <Route path="/" component={App}>
+            <IndexRoute component={Home}/>
             <Route path="document" component={Document}/>
         </Route>
     </Router>
