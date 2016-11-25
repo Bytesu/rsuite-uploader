@@ -11,5 +11,5 @@ IE9 support is developing now.
 
 
 [npm]:https://img.shields.io/npm/v/npm.svg
-[node]:https://img.shields.io/npm/v/npm.svg
+[node]:https://img.shields.io/badge/node.js%20support-0.10–5-brightgreen.svg
 [license]:https://img.shields.io/npm/l/express.svg
