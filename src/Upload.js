@@ -303,7 +303,14 @@ const Upload = React.createClass({
      * 现代浏览器上传方法 （使用XMLHttpRequest）
      */
     modernUpload(){
-        var T = this;
+        const T = this;
+        const hideFileProgressbar = function (file) {
+            //因为动画过度为.6s，所以.6s后再隐藏面板
+            setTimeout(()=> {
+                file.showProgressBar = false;
+                T.modifyFileProps(file);
+            }, 6e2);
+        }
         if (!this.state.fileList) {
             return;
         }
@@ -368,23 +375,19 @@ const Upload = React.createClass({
                         file.progress = 100;
                         T.modifyFileProps(file);
                         T.uploadSuccess(resp, file);
-                        //因为动画过度为.6s，所以.6s后再隐藏面板
-                        setTimeout(()=> {
-                            file.showProgressBar = false;
-                            T.modifyFileProps(file);
-                        }, 6e2);
+                        hideFileProgressbar(file);
                     } else if (xhr.readyState === 4) {
                         //xhr fail
                         let _resp = T.dataType === (DEFAULT_DATA_TYPE_JSON && xhr.responseText) ? JSON.parse(xhr.responseText) : xhr.responseText;
                         file.status = FILE_STATUS_CODE.ERROR;
-                        T.modifyFileProps(file);
+                        hideFileProgressbar(file);
                         T.uploadFail(_resp, file);
                     }
                 } catch (e) {
                     //超时的错误 不在这里处理
                     if (!isTimeout) {
                         file.status = FILE_STATUS_CODE.ERROR;
-                        T.modifyFileProps(file);
+                        hideFileProgressbar(file);
                         T.uploadError({
                             type: UPLOAD_ERROR_CODE_STRING[UPLOAD_ERROR_CODE.SERVER_ERROR],
                             message: {
