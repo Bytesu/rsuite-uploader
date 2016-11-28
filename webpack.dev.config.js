@@ -3,10 +3,10 @@ const webpack = require('webpack');
 
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
-
+const NODE_ENV = process.env.NODE_ENV;
 const plugins = [
     new webpack.DefinePlugin({
-        'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
+        'process.env.NODE_ENV': JSON.stringify(NODE_ENV)
     }),
     new ExtractTextPlugin('[name].css'),
     new HtmlWebpackPlugin({
@@ -15,8 +15,21 @@ const plugins = [
         template: 'example/index.html',
         inject: true,
         hash: true
-    }),
+    })
 ];
+
+if(NODE_ENV ==='production'){
+    plugins.push(
+        new webpack.optimize.UglifyJsPlugin({
+            compress: {
+                warnings: false
+            },
+            comments:false
+        })
+    );
+
+    plugins.push(new webpack.BannerPlugin(`Last update: ${new Date().toString()}`));
+}
 
 const config = {
     entry: {
