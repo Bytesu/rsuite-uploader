@@ -40,5 +40,5 @@ const uploadOption = {
         console.log(gid, file, files);
     }
 };
-<Upload {...uploadOption}>上传文件</Upload>
+<Uploader {...uploadOption}>上传文件</Uploader>
 ```

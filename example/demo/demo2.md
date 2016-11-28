@@ -6,5 +6,5 @@ const fileList = [{
             name: '测试文件2.jpg',
             gid: 1111
         }];
-<Upload disabled={true} fileList={fileList}>上传文件</Upload>
+<Uploader disabled={true} fileList={fileList}>上传文件</Uploader>
 ```

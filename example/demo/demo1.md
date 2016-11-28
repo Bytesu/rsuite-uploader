@@ -1,3 +1,3 @@
 ```javascript
-<Upload disabled={true}>上传文件</Upload>
+<Uploader disabled={true}>上传文件</Uploader>
 ```

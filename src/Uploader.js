@@ -22,7 +22,7 @@ import {
     DEFAULT_DATA_TYPE_JSON
 } from  './common/constant';
 
-const Upload = React.createClass({
+const Uploader = React.createClass({
     propTypes: {
         accept: PropTypes.array,
         autoUpload: PropTypes.bool,
@@ -509,4 +509,4 @@ const Upload = React.createClass({
     }
 });
 
-export default Upload;
+export default Uploader;
