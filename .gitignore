@@ -1,2 +1,6 @@
 .idea/
 .DS_Store
+assets/
+cache/
+lib/
+node_modules/
